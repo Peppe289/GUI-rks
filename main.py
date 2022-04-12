@@ -13,6 +13,16 @@ from threading import Thread
 from tkinter import *
 from tkinter import ttk
 
+def update_gov():
+    try:
+        while True:
+            with open("/sys/devices/system/cpu/cpufreq/policy0/scaling_governor") as f:
+                cur = f.readlines()[0]
+            time.sleep(1)
+            cur_governor.set(str(cur))
+    except RuntimeError:
+        return
+
 def update_freq():
     try:
         while True:
@@ -52,15 +62,21 @@ ttk.Label(frm, text="Number of cluster: ", background="white").grid(column=0, ro
 # convert max_freq to Ghz
 show_max_freq = max_freq/1000000
 ttk.Label(frm, text="Max Freq: " + str(show_max_freq) + " Ghz", background="white").grid(column=0, row=1)
-current_freq = arr.array("i", [0])
+
+cur_governor = StringVar()
+cur_governor.set("Loading...")
+t0 = Thread(target=update_gov)
+t0.start()
+
+ttk.Label(frm, text="Governor: ", background="white").grid(column=0, row=2)
+ttk.Label(frm, textvariable=cur_governor, background="white").grid(column=1, row=2)
 
 # create a StringVar class
 cur_freq = StringVar()
 cur_freq.set("Loading...")
 
 # current freq label
-a = ttk.Label(frm, background="white", textvariable=cur_freq)
-a.grid(column=0, row=2)
+ttk.Label(frm, background="white", textvariable=cur_freq).grid(column=0, row=3)
 
 # start thread
 t1 = Thread(target=update_freq)
