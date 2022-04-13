@@ -22,7 +22,6 @@ def update_gov():
             time.sleep(1)
             cur_governor.set(str(cur))
     except RuntimeError:
-        cur_governor.set("Error")
         return
 
 def update_freq():
@@ -33,7 +32,6 @@ def update_freq():
             time.sleep(1)
             cur_freq.set(str(current_freq))
     except RuntimeError:
-        cur_freq.set(str("Error"))
         return
 
 def find_files(filename, search_path):
