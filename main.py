@@ -1,3 +1,4 @@
+from cgitb import text
 import os
 from tkinter.tix import COLUMN
 from tokenize import String
@@ -21,6 +22,7 @@ def update_gov():
             time.sleep(1)
             cur_governor.set(str(cur))
     except RuntimeError:
+        cur_governor.set("Error")
         return
 
 def update_freq():
@@ -31,6 +33,7 @@ def update_freq():
             time.sleep(1)
             cur_freq.set(str(current_freq))
     except RuntimeError:
+        cur_freq.set(str("Error"))
         return
 
 def find_files(filename, search_path):
@@ -59,9 +62,12 @@ frm2 = ttk.Frame(root)
 frm2.grid()
 frm2.place(relx = 0.0, rely = 1.0, anchor='sw')
 ttk.Label(frm, text="Number of cluster: ", background="white").grid(column=0, row=0)
+ttk.Label(frm, text=ctr_num, background="white").grid(column=1, row=0)
+
 # convert max_freq to Ghz
 show_max_freq = max_freq/1000000
-ttk.Label(frm, text="Max Freq: " + str(show_max_freq) + " Ghz", background="white").grid(column=0, row=1)
+ttk.Label(frm, text="Max Freq: ", background="white").grid(column=0, row=1)
+ttk.Label(frm, text=str(show_max_freq) + " Ghz", background="white").grid(column=1, row=1)
 
 cur_governor = StringVar()
 cur_governor.set("Loading...")
@@ -76,7 +82,8 @@ cur_freq = StringVar()
 cur_freq.set("Loading...")
 
 # current freq label
-ttk.Label(frm, background="white", textvariable=cur_freq).grid(column=0, row=3)
+ttk.Label(frm, text="Current freq: ", background="white").grid(column=0, row=3)
+ttk.Label(frm, background="white", textvariable=cur_freq).grid(column=1, row=3)
 
 # start thread
 t1 = Thread(target=update_freq)
