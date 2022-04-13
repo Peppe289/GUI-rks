@@ -32,41 +32,27 @@ class MainWindow:
         self.root.title("Rave Tool")
         self.root.geometry("400x200")
         self.root.resizable(True, True)
-        self.root.configure(bg="white", padx=10, pady=10)
+        self.root.configure(bg="black", padx=10, pady=10)
+        self.root.tk.call('source', r'./themes/azure.tcl')
+        self.root.tk.call("set_theme", "dark")
         frm = ttk.Frame(self.root)
         frm.grid()
         frm2 = ttk.Frame(self.root)
         frm2.grid()
         frm2.place(relx=0.0, rely=1.0, anchor="sw")
-        ttk.Label(frm, text="Number of cluster: ", background="white").grid(
-            column=0, row=0
-        )
-        ttk.Label(frm, text=clus_num, background="white").grid(column=1, row=0)
+        ttk.Label(frm, text="Number of cluster: ").grid(column=0, row=0)
+        ttk.Label(frm, text=clus_num).grid(column=1, row=0)
 
         # convert max_freq to Ghz
         show_max_freq = max_freq / 1000000
-        ttk.Label(frm, text="Max Freq: ", background="white").grid(
-            column=0, row=1
-        )
-        ttk.Label(
-            frm, text=str(show_max_freq) + " Ghz", background="white"
-        ).grid(column=1, row=1)
-
-        ttk.Label(frm, text="Governor: ", background="white").grid(
-            column=0, row=2
-        )
-        ttk.Label(frm, textvariable=self.cur_governor, background="white").grid(
-            column=1, row=2
-        )
+        ttk.Label(frm, text="Max Freq: ").grid(column=0, row=1)
+        ttk.Label(frm, text=str(show_max_freq) + " Ghz").grid(column=1, row=1)
+        ttk.Label(frm, text="Governor: ").grid(column=0, row=2)
+        ttk.Label(frm, textvariable=self.cur_governor).grid(column=1, row=2)
 
         # current freq label
-        ttk.Label(frm, text="Current freq: ", background="white").grid(
-            column=0, row=3
-        )
-        ttk.Label(frm, background="white", textvariable=self.cur_freq).grid(
-            column=1, row=3
-        )
-
+        ttk.Label(frm, text="Current freq: ").grid(column=0, row=3)
+        ttk.Label(frm, textvariable=self.cur_freq).grid(column=1, row=3)
         ttk.Button(frm2, text="Quit", command=self.stop).grid(column=1, row=0)
 
     def start(self):
