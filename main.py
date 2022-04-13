@@ -1,18 +1,20 @@
-from cgitb import text
+import array as arr
+import asyncio
 import os
+import time
+from cgitb import text
+from threading import Thread
+from time import perf_counter, sleep
+from tkinter import *
+from tkinter import ttk
 from tkinter.tix import COLUMN
 from tokenize import String
 from turtle import bgcolor
 from unittest import result
 from webbrowser import BackgroundBrowser
+
 from numpy import size
-import time
-import asyncio
-import array as arr
-from time import sleep, perf_counter
-from threading import Thread
-from tkinter import *
-from tkinter import ttk
+
 
 def update_gov():
     try:
