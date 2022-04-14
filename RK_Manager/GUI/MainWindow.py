@@ -34,9 +34,6 @@ class MainWindow:
         with open("/sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors") as f:
             available_governors = f.readlines()
 
-        with open("/sys/devices/system/cpu/cpufreq/policy0/scaling_available_frequencies") as f:
-            available_freq = f.readlines()
-
         # UI setup
         self.root.title("Rave Tool")
         self.root.resizable(False, False)
@@ -69,10 +66,6 @@ class MainWindow:
         ttk.Label(frm, text="Available Gov: ").grid(column=0, row=6)
         for x in range (len(available_governors)):
             ttk.Label(frm, text=available_governors[x]).grid(column=1, row=x+6)
-
-        ttk.Label(frm, text="Available Freq: ").grid(column=0, row=6+len(available_governors))
-        for x in range (len(available_freq)):
-            ttk.Label(frm, text=available_freq[x]).grid(column=1, row=x+6+len(available_governors))
 
     def start(self):
         self.update_thread = UpdateThread(self.cur_governor, self.cur_freq, self.used_ram, self.cpu_used)
