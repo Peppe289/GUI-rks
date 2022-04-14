@@ -16,8 +16,10 @@ class MainWindow:
         self.cur_governor.set("Loading...")
         self.cur_freq = StringVar()
         self.cur_freq.set("Loading...")
-        self.used_ram = StringVar();
+        self.used_ram = StringVar()
         self.used_ram.set("Loading...")
+        self.cpu_used = StringVar()
+        self.cpu_used.set("Loading...")
 
         max_freq_dir = Utils.find_files(
             "cpuinfo_max_freq", "/sys/devices/system/cpu/cpufreq/"
@@ -59,19 +61,22 @@ class MainWindow:
         ttk.Label(frm, text="Current freq: ").grid(column=0, row=3)
         ttk.Label(frm, textvariable=self.cur_freq).grid(column=1, row=3)
         
-        ttk.Label(frm, text="Used RAM: ").grid(column=0, row=4)
+        ttk.Label(frm, text="RAM used: ").grid(column=0, row=4)
         ttk.Label(frm, textvariable=self.used_ram).grid(column=1, row=4)
-        
-        ttk.Label(frm, text="Available Gov: ").grid(column=0, row=5)
-        for x in range (size(available_governors)):
-            ttk.Label(frm, text=available_governors[x]).grid(column=1, row=x+5)
 
-        ttk.Label(frm, text="Available Freq: ").grid(column=0, row=5+size(available_governors))
+        ttk.Label(frm, text="CPU used: ").grid(column=0, row=5)
+        ttk.Label(frm, textvariable=self.cpu_used).grid(column=1, row=5)
+        
+        ttk.Label(frm, text="Available Gov: ").grid(column=0, row=6)
+        for x in range (size(available_governors)):
+            ttk.Label(frm, text=available_governors[x]).grid(column=1, row=x+6)
+
+        ttk.Label(frm, text="Available Freq: ").grid(column=0, row=6+size(available_governors))
         for x in range (size(available_freq)):
-            ttk.Label(frm, text=available_freq[x]).grid(column=1, row=x+5+size(available_governors))
+            ttk.Label(frm, text=available_freq[x]).grid(column=1, row=x+6+size(available_governors))
 
     def start(self):
-        self.update_thread = UpdateThread(self.cur_governor, self.cur_freq, self.used_ram)
+        self.update_thread = UpdateThread(self.cur_governor, self.cur_freq, self.used_ram, self.cpu_used)
         # self.threads.append(main_thread)
         self.update_thread.start()
 
