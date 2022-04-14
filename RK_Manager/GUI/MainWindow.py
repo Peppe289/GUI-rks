@@ -37,16 +37,12 @@ class MainWindow:
 
         # UI setup
         self.root.title("Rave Tool")
-        self.root.geometry("800x600")
         self.root.resizable(False, False)
         self.root.configure(bg="black", padx=10, pady=10)
         self.root.tk.call('source', r'./themes/azure.tcl')
         self.root.tk.call("set_theme", "dark")
         frm = ttk.Frame(self.root)
         frm.grid()
-        frm2 = ttk.Frame(self.root)
-        frm2.grid()
-        frm2.place(relx=0.0, rely=1.0, anchor="sw")
         ttk.Label(frm, text="Number of cluster: ").grid(column=0, row=0)
         ttk.Label(frm, text=clus_num).grid(column=1, row=0)
 
@@ -68,7 +64,6 @@ class MainWindow:
         # current freq label
         ttk.Label(frm, text="Current freq: ").grid(column=0, row=3)
         ttk.Label(frm, textvariable=self.cur_freq).grid(column=1, row=3)
-        ttk.Button(frm2, text="Quit", command=self.stop).grid(column=1, row=0)
 
     def start(self):
         self.update_thread = UpdateThread(self.cur_governor, self.cur_freq)
