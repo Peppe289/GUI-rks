@@ -4,6 +4,7 @@ from threading import Thread
 import time
 import psutil
 
+
 class UpdateThread(Thread):
     def __init__(self, cur_governor, cur_freq, used_ram, cpu_used):
         Thread.__init__(self)

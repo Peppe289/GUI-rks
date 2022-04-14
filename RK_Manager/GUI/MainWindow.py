@@ -5,7 +5,6 @@ from threading import Thread
 from .UpdateThread import UpdateThread
 from tkinter import *
 from tkinter import ttk
-from numpy import size
 
 class MainWindow:
     def __init__(self):
@@ -26,7 +25,7 @@ class MainWindow:
         )
 
         # number of cluster:
-        clus_num = size(max_freq_dir)
+        clus_num = len(max_freq_dir)
 
         with open(max_freq_dir[0]) as f:
             max_freq = int(f.readlines()[0])
@@ -68,12 +67,12 @@ class MainWindow:
         ttk.Label(frm, textvariable=self.cpu_used).grid(column=1, row=5)
         
         ttk.Label(frm, text="Available Gov: ").grid(column=0, row=6)
-        for x in range (size(available_governors)):
+        for x in range (len(available_governors)):
             ttk.Label(frm, text=available_governors[x]).grid(column=1, row=x+6)
 
-        ttk.Label(frm, text="Available Freq: ").grid(column=0, row=6+size(available_governors))
-        for x in range (size(available_freq)):
-            ttk.Label(frm, text=available_freq[x]).grid(column=1, row=x+6+size(available_governors))
+        ttk.Label(frm, text="Available Freq: ").grid(column=0, row=6+len(available_governors))
+        for x in range (len(available_freq)):
+            ttk.Label(frm, text=available_freq[x]).grid(column=1, row=x+6+len(available_governors))
 
     def start(self):
         self.update_thread = UpdateThread(self.cur_governor, self.cur_freq, self.used_ram, self.cpu_used)
