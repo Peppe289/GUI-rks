@@ -7,7 +7,6 @@ from tkinter import *
 from tkinter import ttk
 from numpy import size
 
-
 class MainWindow:
     def __init__(self):
         self.root = Tk()
@@ -17,6 +16,8 @@ class MainWindow:
         self.cur_governor.set("Loading...")
         self.cur_freq = StringVar()
         self.cur_freq.set("Loading...")
+        self.used_ram = StringVar();
+        self.used_ram.set("Loading...")
 
         max_freq_dir = Utils.find_files(
             "cpuinfo_max_freq", "/sys/devices/system/cpu/cpufreq/"
@@ -48,25 +49,29 @@ class MainWindow:
 
         # convert max_freq to Ghz
         show_max_freq = max_freq / 1000000
+        
         ttk.Label(frm, text="Max Freq: ").grid(column=0, row=1)
         ttk.Label(frm, text=str(show_max_freq) + " Ghz").grid(column=1, row=1)
+        
         ttk.Label(frm, text="Governor: ").grid(column=0, row=2)
         ttk.Label(frm, textvariable=self.cur_governor).grid(column=1, row=2)
-        ttk.Label(frm, text="Available Gov: ").grid(column=0, row=4)
-        for x in range (size(available_governors)):
-            ttk.Label(frm, text=available_governors[x]).grid(column=1, row=x+4)
 
-        ttk.Label(frm, text="Available Freq: ").grid(column=0, row=4+size(available_governors))
-
-        for x in range (size(available_freq)):
-            ttk.Label(frm, text=available_freq[x]).grid(column=1, row=x+4+size(available_governors))
-
-        # current freq label
         ttk.Label(frm, text="Current freq: ").grid(column=0, row=3)
         ttk.Label(frm, textvariable=self.cur_freq).grid(column=1, row=3)
+        
+        ttk.Label(frm, text="Used RAM: ").grid(column=0, row=4)
+        ttk.Label(frm, textvariable=self.used_ram).grid(column=1, row=4)
+        
+        ttk.Label(frm, text="Available Gov: ").grid(column=0, row=5)
+        for x in range (size(available_governors)):
+            ttk.Label(frm, text=available_governors[x]).grid(column=1, row=x+5)
+
+        ttk.Label(frm, text="Available Freq: ").grid(column=0, row=5+size(available_governors))
+        for x in range (size(available_freq)):
+            ttk.Label(frm, text=available_freq[x]).grid(column=1, row=x+5+size(available_governors))
 
     def start(self):
-        self.update_thread = UpdateThread(self.cur_governor, self.cur_freq)
+        self.update_thread = UpdateThread(self.cur_governor, self.cur_freq, self.used_ram)
         # self.threads.append(main_thread)
         self.update_thread.start()
 
