@@ -8,7 +8,7 @@ class Utils:
             "/sys/devices/system/cpu/cpufreq/policy0/scaling_governor"
         ) as f:
             gov = f.readlines()[0]
-        return str(gov)
+        return str(gov).strip()
 
     @staticmethod
     def get_current_freq():
@@ -16,7 +16,7 @@ class Utils:
             "/sys/devices/system/cpu/cpufreq/policy0/scaling_cur_freq"
         ) as f:
             current_freq = f.readlines()[0]
-        return str(current_freq)
+        return str(current_freq).strip()
 
     @staticmethod
     def find_files(filename, search_path):
