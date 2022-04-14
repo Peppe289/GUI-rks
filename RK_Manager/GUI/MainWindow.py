@@ -38,8 +38,8 @@ class MainWindow:
 
         # UI setup
         self.root.title("Rave Tool")
-        self.root.geometry("400x200")
-        self.root.resizable(True, True)
+        self.root.geometry("800x600")
+        self.root.resizable(False, False)
         self.root.configure(bg="black", padx=10, pady=10)
         self.root.tk.call('source', r'./themes/azure.tcl')
         self.root.tk.call("set_theme", "dark")
