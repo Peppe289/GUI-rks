@@ -28,6 +28,14 @@ class MainWindow:
         with open(max_freq_dir[0]) as f:
             max_freq = int(f.readlines()[0])
 
+        # directory for available governors
+        available_governors_dir = Utils.find_files(
+            "scaling_available_governors", "/sys/devices/system/cpu/cpufreq/"
+        )
+
+        with open(available_governors_dir[0]) as f:
+            available_governors = f.readlines()
+
         # UI setup
         self.root.title("Rave Tool")
         self.root.geometry("400x200")
@@ -49,6 +57,9 @@ class MainWindow:
         ttk.Label(frm, text=str(show_max_freq) + " Ghz").grid(column=1, row=1)
         ttk.Label(frm, text="Governor: ").grid(column=0, row=2)
         ttk.Label(frm, textvariable=self.cur_governor).grid(column=1, row=2)
+        ttk.Label(frm, text="Available Gov: ").grid(column=0, row=4)
+        for x in range (size(available_governors)):
+            ttk.Label(frm, text=available_governors[x]).grid(column=1, row=x+4)
 
         # current freq label
         ttk.Label(frm, text="Current freq: ").grid(column=0, row=3)
