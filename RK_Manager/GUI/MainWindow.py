@@ -28,12 +28,8 @@ class MainWindow:
         with open(max_freq_dir[0]) as f:
             max_freq = int(f.readlines()[0])
 
-        # directory for available governors
-        available_governors_dir = Utils.find_files(
-            "scaling_available_governors", "/sys/devices/system/cpu/cpufreq/"
-        )
-
-        with open(available_governors_dir[0]) as f:
+        # save available governors
+        with open("/sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors") as f:
             available_governors = f.readlines()
 
         # UI setup
