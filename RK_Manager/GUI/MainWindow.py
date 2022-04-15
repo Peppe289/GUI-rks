@@ -1,7 +1,5 @@
 from ..Utils import Utils
 
-import time
-from threading import Thread
 from .UpdateThread import UpdateThread
 from tkinter import *
 from tkinter import ttk
@@ -32,7 +30,7 @@ class MainWindow:
 
         # save available governors
         with open("/sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors") as f:
-            available_governors = f.readlines()
+            available_governors = f.readlines()[0].strip().split(" ")
 
         # UI setup
         self.root.title("Rave Tool")
@@ -51,9 +49,6 @@ class MainWindow:
         ttk.Label(frm, text="Max Freq: ").grid(column=0, row=1)
         ttk.Label(frm, text=str(show_max_freq) + " Ghz").grid(column=1, row=1)
         
-        ttk.Label(frm, text="Governor: ").grid(column=0, row=2)
-        ttk.Label(frm, textvariable=self.cur_governor).grid(column=1, row=2)
-
         ttk.Label(frm, text="Current freq: ").grid(column=0, row=3)
         ttk.Label(frm, textvariable=self.cur_freq).grid(column=1, row=3)
         
@@ -63,9 +58,13 @@ class MainWindow:
         ttk.Label(frm, text="CPU used: ").grid(column=0, row=5)
         ttk.Label(frm, textvariable=self.cpu_used).grid(column=1, row=5)
         
-        ttk.Label(frm, text="Available Gov: ").grid(column=0, row=6)
-        for x in range (len(available_governors)):
-            ttk.Label(frm, text=available_governors[x]).grid(column=1, row=x+6)
+        ttk.Label(frm, text="Available Gov: ").grid(column=0, row=6)        
+        # Governors combobox
+        self.gov_combo = ttk.Combobox(frm, values=available_governors, state="readonly")
+        self.gov_combo.grid(column=1, row=6)
+        # Set current governor as default
+        self.gov_combo.current(available_governors.index(Utils.get_current_gov()))
+
 
     def start(self):
         self.update_thread = UpdateThread(self.cur_governor, self.cur_freq, self.used_ram, self.cpu_used)
@@ -73,15 +72,6 @@ class MainWindow:
         self.update_thread.start()
 
         self.root.mainloop()
-
-        # DISABLED THIS FOR NOW
-        # freq_thread = Thread(target=self.update_freq)
-        # freq_thread.start()
-        # self.threads.append(freq_thread)
-
-        # gov_thread = Thread(target=self.update_gov)
-        # gov_thread.start()
-        # self.threads.append(gov_thread)
 
     def stop(self):
         self.update_thread.stop()
