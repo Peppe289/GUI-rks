@@ -3,6 +3,13 @@ RK Manager
 
 RK manager is a simple manager/monitor for the linux kernel. Comes with GUI (From https://github.com/rdbende/Azure-ttk-theme).
 
+### Modules needed
+
+psutil, just do:
+```
+pip install psutil
+```
+
 What can you do with this tool?
 ---
 Built with python resources you can:
