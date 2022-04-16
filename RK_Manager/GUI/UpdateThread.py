@@ -21,7 +21,6 @@ class UpdateThread(Thread):
             while not self.is_stopped:
                 time.sleep(1)
                 self.cur_governor.set(Utils.get_current_gov())
-                self.cur_freq.set(Utils.get_current_freq())
                 self.used_ram.set(str(psutil.virtual_memory().percent) + "%")
                 self.cpu_used.set(str(psutil.cpu_percent()) + "%")
                 # write all file with this directory:
@@ -31,6 +30,7 @@ class UpdateThread(Thread):
                     with open("/sys/devices/system/cpu/cpufreq/policy" + str(x) + "/scaling_governor", 'w') as f:
                         f.write(self.gov_combo.get())
 
+                self.cur_freq.set(Utils.get_current_freq())
         except RuntimeError:
             pass
 
