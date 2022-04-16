@@ -15,19 +15,35 @@ Built with python resources you can:
 
   the following steps are basic and can be performed in a lot of alternative ways, altrought if you don't know what you're doing just follow the guide to make sure everithing will work fine
   
-### clone this repo:
+### Clone this repo:
 
     git clone https://github.com/Peppe289/RK-Manager.git
 
-### move into the folder and give exec permissions
+### Move into the folder and give exec permissions
     
     cd RK-Manager
     chmod +x main.py
     
-### install dependencies
+### Install dependencies
 
-Install all the modules with
-  `pip3 install -r requirements.txt`
+You can install all modules with `sudo` or without.
+
+#### Install with sudo
+
+Install all the modules with `sudo pip3 install -r requirements.txt`
+
+#### Install without sudo
+Install all the modules without sudo:
+
+If you don't have python3.8-venv packages installed.
+
+    sudo apt install python3.8-venv
+
+After install python3.8-venv create your user environment with python libs:
+
+    python3 -m venv venv
+    ./venv/bin/python3 -m pip install -r requirements.txt
+    sudo ./venv/bin/python3 main.py
     
 ### Enjoy!
     sudo ./main.py
