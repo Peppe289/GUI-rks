@@ -2,11 +2,6 @@
 
 RK manager is a simple manager/monitor for the linux kernel. Comes with GUI (From https://github.com/rdbende/Azure-ttk-theme).
 
-### Modules needed
-
-Install all the modules with
-`pip install -r requirements.txt`
-
 ## What can you do with this tool?
 
 Built with python resources you can:
@@ -14,6 +9,27 @@ Built with python resources you can:
 - Look at the CPU structure and usage information;
 - Look at RAM usage;
 - Look at the governor and frequency settings.
+
+## Download and run
+
+  the following steps are basic and can be performed in a lot of alternative ways, altrought if you don't know what you're doing just follow the guide to make sure everithing will work fine
+  
+### clone this repo:
+
+    git clone https://github.com/Peppe289/RK-Manager.git
+
+### move into the folder and give exec permissions
+    
+    cd RK-Manager
+    chmod +x main.py
+    
+### install dependencies
+
+Install all the modules with
+  `pip3 install -r requirements.txt`
+    
+### Enjoy!
+    ./main.py
 
 ## Notes
 
