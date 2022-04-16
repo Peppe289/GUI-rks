@@ -46,19 +46,19 @@ class MainWindow:
         # convert max_freq to Ghz
         show_max_freq = max_freq / 1000000
         
-        ttk.Label(frm, text="Max Freq: ").grid(column=0, row=1)
+        ttk.Label(frm, text="Max Freq: ", borderwidth=20).grid(column=0, row=1)
         ttk.Label(frm, text=str(show_max_freq) + " Ghz").grid(column=1, row=1)
         
-        ttk.Label(frm, text="Current freq: ").grid(column=0, row=3)
+        ttk.Label(frm, text="Current freq: ", borderwidth=20).grid(column=0, row=3)
         ttk.Label(frm, textvariable=self.cur_freq).grid(column=1, row=3)
         
-        ttk.Label(frm, text="RAM used: ").grid(column=0, row=4)
+        ttk.Label(frm, text="RAM used: ", borderwidth=20).grid(column=0, row=4)
         ttk.Label(frm, textvariable=self.used_ram).grid(column=1, row=4)
 
-        ttk.Label(frm, text="CPU used: ").grid(column=0, row=5)
+        ttk.Label(frm, text="CPU used: ", borderwidth=20).grid(column=0, row=5)
         ttk.Label(frm, textvariable=self.cpu_used).grid(column=1, row=5)
         
-        ttk.Label(frm, text="Available Gov: ").grid(column=0, row=6)        
+        ttk.Label(frm, text="Available Gov: ", borderwidth=20).grid(column=0, row=6)        
         # Governors combobox
         self.gov_combo = ttk.Combobox(frm, values=available_governors, state="readonly")
         self.gov_combo.grid(column=1, row=6)
