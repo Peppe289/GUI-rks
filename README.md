@@ -9,6 +9,7 @@ Built with python resources you can:
 - Look at the CPU structure and usage information;
 - Look at RAM usage;
 - Look at the governor and frequency settings.
+- Change CPU governor
 
 ## Download and run
 
@@ -29,7 +30,7 @@ Install all the modules with
   `pip3 install -r requirements.txt`
     
 ### Enjoy!
-    ./main.py
+    sudo ./main.py
 
 ## Notes
 
