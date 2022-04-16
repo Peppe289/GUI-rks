@@ -3,6 +3,7 @@ from ..Utils import Utils
 from .UpdateThread import UpdateThread
 from tkinter import *
 from tkinter import ttk
+import re
 
 class MainWindow:
     def __init__(self):
@@ -21,6 +22,13 @@ class MainWindow:
         max_freq_dir = Utils.find_files(
             "cpuinfo_max_freq", "/sys/devices/system/cpu/cpufreq/"
         )
+
+        # search name of CPU
+        proc_info = open("/proc/cpuinfo", "r")
+        for line in proc_info:
+            if re.search("model name", line):
+                cpuinfo = line
+                break
 
         # number of cluster:
         self.clus_num = len(max_freq_dir)
@@ -45,9 +53,12 @@ class MainWindow:
 
         # convert max_freq to Ghz
         show_max_freq = max_freq / 1000000
-        
-        ttk.Label(frm, text="Max Freq: ", borderwidth=20).grid(column=0, row=1)
-        ttk.Label(frm, text=str(show_max_freq) + " Ghz").grid(column=1, row=1)
+
+        ttk.Label(frm, text="CPU model: ", borderwidth=20).grid(column=0, row=1)
+        ttk.Label(frm, text=cpuinfo.replace("model name\t: ", ""), borderwidth=20).grid(column=1, row=1)
+
+        ttk.Label(frm, text="Max Freq: ", borderwidth=20).grid(column=0, row=2)
+        ttk.Label(frm, text=str(show_max_freq) + " Ghz").grid(column=1, row=2)
         
         ttk.Label(frm, text="Current freq: ", borderwidth=20).grid(column=0, row=3)
         ttk.Label(frm, textvariable=self.cur_freq).grid(column=1, row=3)
