@@ -23,7 +23,7 @@ class MainWindow:
         )
 
         # number of cluster:
-        clus_num = len(max_freq_dir)
+        self.clus_num = len(max_freq_dir)
 
         with open(max_freq_dir[0]) as f:
             max_freq = int(f.readlines()[0])
@@ -41,7 +41,7 @@ class MainWindow:
         frm = ttk.Frame(self.root)
         frm.grid()
         ttk.Label(frm, text="Number of cluster: ").grid(column=0, row=0)
-        ttk.Label(frm, text=clus_num).grid(column=1, row=0)
+        ttk.Label(frm, text=self.clus_num).grid(column=1, row=0)
 
         # convert max_freq to Ghz
         show_max_freq = max_freq / 1000000
@@ -65,9 +65,8 @@ class MainWindow:
         # Set current governor as default
         self.gov_combo.current(available_governors.index(Utils.get_current_gov()))
 
-
     def start(self):
-        self.update_thread = UpdateThread(self.cur_governor, self.cur_freq, self.used_ram, self.cpu_used)
+        self.update_thread = UpdateThread(self.cur_governor, self.cur_freq, self.used_ram, self.cpu_used, self.gov_combo, self.clus_num)
         # self.threads.append(main_thread)
         self.update_thread.start()
 
