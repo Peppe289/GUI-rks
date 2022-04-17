@@ -71,13 +71,14 @@ class MainWindow:
         
         ttk.Label(frm, text="Available Gov: ", borderwidth=20).grid(column=0, row=6)        
         # Governors combobox
+        self.temp = Utils.get_current_gov()
         self.gov_combo = ttk.Combobox(frm, values=available_governors, state="readonly")
         self.gov_combo.grid(column=1, row=6)
         # Set current governor as default
         self.gov_combo.current(available_governors.index(Utils.get_current_gov()))
 
     def start(self):
-        self.update_thread = UpdateThread(self.cur_governor, self.cur_freq, self.used_ram, self.cpu_used, self.gov_combo, self.clus_num)
+        self.update_thread = UpdateThread(self.cur_governor, self.cur_freq, self.used_ram, self.cpu_used, self.gov_combo, self.clus_num, self.temp)
         # self.threads.append(main_thread)
         self.update_thread.start()
 
