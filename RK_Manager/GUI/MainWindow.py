@@ -4,6 +4,7 @@ from .UpdateThread import UpdateThread
 from tkinter import *
 from tkinter import ttk
 import re
+import os
 
 class MainWindow:
     def __init__(self):
@@ -76,6 +77,9 @@ class MainWindow:
         self.gov_combo.grid(column=1, row=6)
         # Set current governor as default
         self.gov_combo.current(available_governors.index(Utils.get_current_gov()))
+
+        if os.geteuid() != 0:
+            ttk.Label(frm, text="Watch out. If you run without root some functions will not be available", foreground="red", borderwidth=20).grid(column=0, row=7)
 
     def start(self):
         self.update_thread = UpdateThread(self.cur_governor, self.cur_freq, self.used_ram, self.cpu_used, self.gov_combo, self.clus_num, self.temp)
