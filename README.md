@@ -43,10 +43,14 @@ After install python3.8-venv create your user environment with python libs:
 
     python3 -m venv venv
     ./venv/bin/python3 -m pip install -r requirements.txt
-    sudo ./venv/bin/python3 main.py
     
 ### Enjoy!
+
     sudo ./main.py
+
+or
+
+    sudo ./venv/bin/python3 main.py
 
 ## Notes
 
