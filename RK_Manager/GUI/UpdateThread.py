@@ -27,17 +27,17 @@ class UpdateThread(Thread):
                 # write all file with this directory:
                 # /sys/devices/system/cpu/cpufreq/policy<X>/scaling_governor
                 # change governor only when select different gov in box
-                if os.geteuid() == 0:
-                    if self.temp != self.gov_combo.get():
+                if self.temp != self.gov_combo.get():
+                    if os.geteuid() == 0:
                         print("Change governor from ", self.temp, " to ", self.gov_combo.get())
                         for x in range(self.clus_num):
                             with open("/sys/devices/system/cpu/cpufreq/policy" + str(x) + "/scaling_governor", 'w') as f:
                                 f.write(self.gov_combo.get())
                         self.temp = self.gov_combo.get()
-                else:
-                    if self.temp != self.gov_combo.get():
+                    else:
                         print("Please, run as root")
                         self.temp = self.gov_combo.get()
+
 
                 self.cur_freq.set(Utils.get_current_freq())
         except RuntimeError:
