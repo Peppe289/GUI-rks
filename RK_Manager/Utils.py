@@ -29,3 +29,9 @@ class Utils:
             if filename in files:
                 result.append(os.path.join(root, filename))
         return result
+
+    @staticmethod
+    def changeGov(newgovernor, cluster):
+        for x in range(cluster):
+            with open("/sys/devices/system/cpu/cpufreq/policy" + str(x) + "/scaling_governor", 'w') as f:
+                f.write(newgovernor)
