@@ -38,8 +38,7 @@ class UpdateThread(Thread):
                         print("Please, run as root")
                         self.temp = self.gov_combo.get()
 
-
-                self.cur_freq.set(Utils.get_current_freq())
+                self.cur_freq.set(Utils.get_current_freq() + " Mhz")
         except RuntimeError:
             pass
 

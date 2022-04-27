@@ -52,7 +52,7 @@ class MainWindow:
         ttk.Label(frm, text="Number of cluster: ").grid(column=0, row=0)
         ttk.Label(frm, text=self.clus_num).grid(column=1, row=0)
 
-        # convert max_freq to Ghz
+        # convert max_freq from Khz to Ghz
         show_max_freq = max_freq / 1000000
 
         ttk.Label(frm, text="CPU model: ", borderwidth=20).grid(column=0, row=1)

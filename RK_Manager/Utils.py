@@ -16,7 +16,8 @@ class Utils:
             "/sys/devices/system/cpu/cpufreq/policy0/scaling_cur_freq"
         ) as f:
             current_freq = f.readlines()[0]
-        return str(current_freq).strip()
+        # return in Mhz
+        return str(int(int(current_freq) / 1000)).strip()
 
     @staticmethod
     def find_files(filename, search_path):
