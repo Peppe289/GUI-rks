@@ -10,15 +10,12 @@ std::string readfile(std::string filename) {
     isfile.open(filename, std::ios::in);
 
     if (!isfile)
-        goto error;
+        return "0";
 
     isfile>>input;
     isfile.close();
 
     return input;
-
-error:
-    return "Error";
 }
 
 float _cpu_maxfreq(std::vector<std::string> cluster) {
