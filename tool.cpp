@@ -9,11 +9,13 @@ std::string readfile(std::string filename) {
     std::string input;
     isfile.open(filename, std::ios::in);
 
-    if (!isfile)
+    try {
+        isfile>>input;
+        isfile.close();
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << '\n';
         return "0";
-
-    isfile>>input;
-    isfile.close();
+    }
 
     return input;
 }
