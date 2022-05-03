@@ -6,11 +6,19 @@
 
 std::string readfile(std::string filename) {
     std::fstream isfile;
-    std::string input;
+    std::string input = "";
     isfile.open(filename, std::ios::in);
 
     try {
-        isfile>>input;
+//        isfile>>input;
+        std::string temp;
+        while (1) {
+            isfile >> temp;
+            if (isfile.eof())
+                break;
+
+            input = input + temp + " ";
+        }
         isfile.close();
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';

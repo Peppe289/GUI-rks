@@ -8,15 +8,17 @@ static void _showinfo(info cpu) {
         std::cout<<cpu.cluster[i]<<"\n";*/
 
     std::cout<<"Number of cluster : "<<cpu.cluster.size()<<"\n";
-
     std::cout<<"Max freq : "<<cpu.maxfreq<<" Ghz\n";
+    std::cout<<"Kernel version : "<<cpu.kernelversion<<"\n";
 }
 
 int main (int argc, char *argv[]) {
     info cpu;
-    cpu.SearchCluster();
 
+    // initialize
+    cpu.SearchCluster();
     cpu.maxfreq = _cpu_maxfreq(cpu.cluster);
+    cpu.kernelversion = readfile("/proc/version");
 
     if (argc == 2) {
         std::string cmd(argv[1]);
