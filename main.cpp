@@ -20,12 +20,16 @@ int main (int argc, char *argv[]) {
     cpu.maxfreq = _cpu_maxfreq(cpu.cluster);
     cpu.kernelversion = readfile("/proc/version");
 
-    if (argc == 2) {
-        std::string cmd(argv[1]);
-
-        if (cmd == "--info") {
-            _showinfo(cpu);
-        }
+    switch (argc) {
+        case 2:
+            if ((std::string)argv[1] == "--info") {
+                _showinfo(cpu);
+            }
+        break;
+//        case 3:
+//        break;
+        default:
+            std::cout<<"You have to run it with a command\n";
     }
 
     std::cout<<"\n";
