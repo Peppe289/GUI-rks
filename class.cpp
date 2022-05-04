@@ -11,8 +11,25 @@ static bool _numer_equal_string(int x, std::string y) {
     return x == (int)y.length();
 }
 
+void info::uploadgovernor(std::string temp) {
+    int c = 0;
+    for (int i = 0; i != (int)temp.length(); ++i)
+        if (isspace((char)temp[i]))
+            c++;
+
+    int i = 0;
+    std::stringstream ssin(temp);
+    std::string tem;
+    while (ssin.good() && i < c){
+        ssin >> tem;
+        available_gov.push_back(tem);
+        ++i;
+    }
+}
+
 void info::SearchCluster() {
-    DIR *dir; struct dirent *diread;
+    DIR *dir;
+    struct dirent *diread;
     std::vector<std::string> files;
     std::string policy = "policy";
     int counter;

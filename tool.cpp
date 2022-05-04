@@ -7,9 +7,9 @@
 std::string readfile(std::string filename) {
     std::fstream isfile;
     std::string input = "";
-    isfile.open(filename, std::ios::in);
 
     try {
+        isfile.open(filename, std::ios::in);
 //        isfile>>input;
         std::string temp;
         while (1) {
@@ -40,4 +40,16 @@ float _cpu_maxfreq(std::vector<std::string> cluster) {
 
     // return in Ghz
     return maxfreq / 1000000;
+}
+
+void setgovernor(std::string directory, std::string governor) {
+    std::fstream write;
+    
+    try {
+        write.open(directory, std::ios::out);
+        write << governor;
+        write.close();
+    } catch(const std::exception& e) {
+        std::cerr << e.what() << '\n';
+    }
 }
