@@ -37,13 +37,15 @@ int main (int argc, char *argv[]) {
                 return 0;
             }
 
-            if ((std::string)argv[1] == "set-gov" ) {
-                
-                //for(int i = 0; i != (int)cpu.available_gov.length(); ++i)
-                //    if ((std::string)argv[2] == cpu.available_gov[])
-
-                //for (int i = 0; i != (int)cpu.cluster.size(); ++i)
-                //    setgovernor((std::string)CPUFREQ + cpu.cluster[i] + "/scaling_governor");
+            if ((std::string)argv[1] == "-set-gov" ) {
+                for(int i = 0; i != (int)cpu.available_gov.size(); ++i) {
+                    if ((std::string)argv[2] == cpu.available_gov[i]) {
+                        // when find governor set it and break
+                        for (int k = 0; k != (int)cpu.cluster.size(); ++k)
+                            setgovernor((std::string)CPUFREQ + cpu.cluster[k] + "/scaling_governor", cpu.available_gov[i]);
+                        break;
+                    }
+                }
             }
         break;
         default:
