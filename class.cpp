@@ -39,7 +39,8 @@ void info::SearchCluster() {
 
             counter = 0;
             std::string temp = diread->d_name;
-            for (int k = 0; k != (int)temp.length() - 1; ++k) {
+            int length = (temp.size() < policy.size()) ? temp.size() : policy.size();
+            for (int k = 0; k != length; ++k) {
                 if (temp[k] == policy[k])
                     counter++;
             }
