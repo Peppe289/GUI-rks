@@ -8,22 +8,20 @@ std::string readfile(std::string filename) {
     std::fstream isfile;
     std::string input = "";
 
-    try {
-        isfile.open(filename, std::ios::in);
-//        isfile>>input;
-        std::string temp;
-        while (1) {
-            isfile >> temp;
-            if (isfile.eof())
-                break;
+    isfile.open(filename, std::ios::in);
 
-            input = input + temp + " ";
-        }
-        isfile.close();
-    } catch (const std::exception& e) {
-        std::cerr << e.what() << '\n';
+    if (!isfile)
         return "0";
+
+    std::string temp;
+    while (1) {
+        isfile >> temp;
+        if (isfile.eof())
+            break;
+
+        input = input + temp + " ";
     }
+    isfile.close();
 
     return input;
 }
