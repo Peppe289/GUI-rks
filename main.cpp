@@ -9,7 +9,8 @@ static void _showinfo(info cpu) {
 
     std::cout<<"Number of cluster : "<<cpu.cluster.size()<<"\n";
     std::cout<<"Max freq : "<<cpu.maxfreq<<" Ghz\n";
-    std::cout<<"Available governor : ";
+    std::cout<<"Current governor : "<<readfile((std::string)CPUFREQ + "policy0/scaling_governor");
+    std::cout<<"\nAvailable governor : ";
     for (int i = 0; i != (int)cpu.available_gov.size(); ++i)
         std::cout<<cpu.available_gov[i]<<" ";
 
