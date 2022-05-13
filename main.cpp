@@ -8,8 +8,11 @@ static void _showinfo(info cpu) {
         std::cout<<cpu.cluster[i]<<"\n";*/
 
     std::cout<<"Number of cluster : "<<cpu.cluster.size()<<"\n";
-    std::cout<<"Max freq : "<<cpu.maxfreq<<" Ghz\n";
-    std::cout<<"Current governor : "<<readfile((std::string)CPUFREQ + "policy0/scaling_governor");
+    std::cout<<"Max freq : "<<cpu.maxfreq<<" Ghz";
+
+    for (int i = 0; i != (int)cpu.cluster.size(); ++i)
+        std::cout<<"\nGovernor "<<cpu.cluster[i]<<" : "<<readfile((std::string)CPUFREQ + "policy" + std::to_string(i) + "/scaling_governor");
+
     std::cout<<"\nAvailable governor : ";
     for (int i = 0; i != (int)cpu.available_gov.size(); ++i)
         std::cout<<cpu.available_gov[i]<<" ";
