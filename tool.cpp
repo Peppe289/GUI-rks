@@ -4,6 +4,21 @@
 #include "include/class.hpp"
 #include "include/tool.hpp"
 
+void set_governor(std::string new_gov, std::vector<std::string> available_gov,
+                                    std::vector<std::string> cluster) {
+
+    for(int i = 0; i != (int)available_gov.size(); ++i) {
+        if (new_gov == available_gov[i]) {
+            // when find governor set it and break
+            for (int k = 0; k != (int)cluster.size(); ++k)
+                setgovernor((std::string)CPUFREQ + cluster[k] + "/scaling_governor", available_gov[i]);
+
+            break;
+        }
+    }
+
+}
+
 std::string readfile(std::string filename) {
     std::fstream isfile;
     std::string input = "";

@@ -3,6 +3,8 @@
 #include <vector>
 
 #define CPUFREQ     "/sys/devices/system/cpu/cpufreq/"
+#define ROOTACCESS  1
+#define ERUSER      0
 
 class info {
     public:

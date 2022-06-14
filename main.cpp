@@ -3,6 +3,48 @@
 #include "include/tool.hpp"
 #include "include/class.hpp"
 
+bool RootCheck() {
+    if (getuid() == 0)
+        return ROOTACCESS;
+
+    return ERUSER;
+}
+
+int cmd_argc(int argc, char *argv[]) {
+
+    /*
+    std::cout<<"CMD: ";
+    for (int i = 0; i != argc; ++i)
+        std::cout<<(std::string)argv[i]<<" ";
+
+    std::cout<<"\n"; */
+
+    // no cmd argv
+    if (argc == 1)
+        return 0;
+
+    if (argc == 2 && (std::string)argv[1] == "--info") {
+        return 1;
+    }
+
+    /*
+     * is:
+            1         2        3
+     * ./programm -set-gov <governor>
+     */
+    if (argc == 2 && (std::string)argv[1] == "-set-gov")
+        /* 
+         * is error bcs isn't used with governor name.
+         * so, wen can't return value to set governor 
+         */
+        return 0;
+    else if (argc == 3 && (std::string)argv[1] == "-set-gov") {
+        return 2;
+    }
+
+    return 0;
+}
+
 static void _showinfo(info cpu) {
 /*    for (int i = 0; i != (int)cpu.cluster.size(); ++i)
         std::cout<<cpu.cluster[i]<<"\n";*/
@@ -29,28 +71,21 @@ int main (int argc, char *argv[]) {
     cpu.kernelversion = readfile("/proc/version");
     cpu.uploadgovernor(readfile((std::string)CPUFREQ + "policy0/scaling_available_governors"));
 
-    switch (argc) {
-        case 2:
-            if ((std::string)argv[1] == "--info") {
-                _showinfo(cpu);
-            }
+    /*
+     * Switch DOC:
+     * case 1: show info of CPU structure and kernel
+     * case 2: change governor setting
+     * default case: show message to run with command
+     */
+    switch (cmd_argc(argc, argv)) {
+        case 1:
+            _showinfo(cpu);
         break;
-        case 3:
-            if (!(getuid() == 0)) {
-                std::cout<<"To use this start with SU\n";
-                return 0;
+        case 2:
+            if (!RootCheck()) {
+                std::cout<<"Run as root. bye!\n";
             }
-
-            if ((std::string)argv[1] == "-set-gov" ) {
-                for(int i = 0; i != (int)cpu.available_gov.size(); ++i) {
-                    if ((std::string)argv[2] == cpu.available_gov[i]) {
-                        // when find governor set it and break
-                        for (int k = 0; k != (int)cpu.cluster.size(); ++k)
-                            setgovernor((std::string)CPUFREQ + cpu.cluster[k] + "/scaling_governor", cpu.available_gov[i]);
-                        break;
-                    }
-                }
-            }
+            set_governor((std::string)argv[2], cpu.available_gov, cpu.cluster);
         break;
         default:
             std::cout<<"You have to run it with a command\n";
