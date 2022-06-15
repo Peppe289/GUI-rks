@@ -10,6 +10,13 @@ bool RootCheck() {
     return ERUSER;
 }
 
+void helper(std::string arg) {
+    std::cout<<"Welcome to helper\n"
+                "use "<<arg<<" with: \n";
+    std::cout<<"-set-gov\t\t\tTo change current governor\n";
+    std::cout<<"--info\t\t\t\tTo see all info about CPU and kernel\n";
+}
+
 int cmd_argc(int argc, char *argv[]) {
 
     // no cmd argv
@@ -18,6 +25,9 @@ int cmd_argc(int argc, char *argv[]) {
 
     if (argc == 2 && (std::string)argv[1] == "--info")
         return 1;
+
+    if (argc == 2 && (std::string)argv[1] == "--help")
+        return 3;
 
     /*
      * is:
@@ -78,8 +88,12 @@ int main (int argc, char *argv[]) {
             }
             set_governor((std::string)argv[2], cpu.available_gov, cpu.cluster);
         break;
+        case 3:
+            helper((std::string)argv[0]);
+        break;
         default:
-            std::cout<<"You have to run it with a command\n";
+            std::cout<<"You have to run it with a command\n"
+                        "To show all cmd use --help";
     }
 
     std::cout<<"\n";
