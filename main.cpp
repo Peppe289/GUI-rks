@@ -12,51 +12,42 @@ bool RootCheck() {
 
 int cmd_argc(int argc, char *argv[]) {
 
-    /*
-    std::cout<<"CMD: ";
-    for (int i = 0; i != argc; ++i)
-        std::cout<<(std::string)argv[i]<<" ";
-
-    std::cout<<"\n"; */
-
     // no cmd argv
     if (argc == 1)
         return 0;
 
-    if (argc == 2 && (std::string)argv[1] == "--info") {
+    if (argc == 2 && (std::string)argv[1] == "--info")
         return 1;
-    }
 
     /*
      * is:
             1         2        3
      * ./programm -set-gov <governor>
      */
-    if (argc == 2 && (std::string)argv[1] == "-set-gov")
+    if (argc == 2 && (std::string)argv[1] == "-set-gov") {
         /* 
          * is error bcs isn't used with governor name.
          * so, wen can't return value to set governor 
          */
         return 0;
-    else if (argc == 3 && (std::string)argv[1] == "-set-gov") {
-        return 2;
     }
+    else if (argc == 3 && (std::string)argv[1] == "-set-gov")
+        return 2;
 
     return 0;
 }
 
 static void _showinfo(info cpu) {
-/*    for (int i = 0; i != (int)cpu.cluster.size(); ++i)
-        std::cout<<cpu.cluster[i]<<"\n";*/
+    int i;
 
     std::cout<<"Number of cluster : "<<cpu.cluster.size()<<"\n";
     std::cout<<"Max freq : "<<cpu.maxfreq<<" Ghz";
 
-    for (int i = 0; i != (int)cpu.cluster.size(); ++i)
+    for (i = 0; i != (int)cpu.cluster.size(); ++i)
         std::cout<<"\nGovernor "<<cpu.cluster[i]<<" : "<<readfile((std::string)CPUFREQ + "policy" + std::to_string(i) + "/scaling_governor");
 
     std::cout<<"\nAvailable governor : ";
-    for (int i = 0; i != (int)cpu.available_gov.size(); ++i)
+    for (i = 0; i != (int)cpu.available_gov.size(); ++i)
         std::cout<<cpu.available_gov[i]<<" ";
 
     std::cout<<"\n\nKernel version : "<<cpu.kernelversion<<"\n";
