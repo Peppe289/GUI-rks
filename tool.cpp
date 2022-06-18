@@ -6,6 +6,7 @@
 
 void set_governor(std::string new_gov, std::vector<std::string> available_gov,
                                     std::vector<std::string> cluster) {
+    int ret = 0;
 
     for(int i = 0; i != (int)available_gov.size(); ++i) {
         if (new_gov == available_gov[i]) {
@@ -14,8 +15,15 @@ void set_governor(std::string new_gov, std::vector<std::string> available_gov,
                 setgovernor((std::string)CPUFREQ + cluster[k] + "/scaling_governor", available_gov[i]);
 
             break;
+        } else {
+            ++ret;
         }
     }
+
+    if (ret == (int)available_gov.size())
+        std::cout<<"Governor not found! bye.";
+    else
+        std::cout<<"Governor set!";
 
 }
 
