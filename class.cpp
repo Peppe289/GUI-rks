@@ -7,7 +7,7 @@
 #include <dirent.h>
 #include <vector>
 
-static bool _numer_equal_string(int x, std::string y) {
+bool _numer_equal_string(int x, std::string y) {
     return x == (int)y.length();
 }
 
