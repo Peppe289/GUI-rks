@@ -85,6 +85,7 @@ int main (int argc, char *argv[]) {
         case 2:
             if (!RootCheck()) {
                 std::cout<<"Run as root. bye!\n";
+                return 0;
             }
             set_governor((std::string)argv[2], cpu.available_gov, cpu.cluster);
         break;
