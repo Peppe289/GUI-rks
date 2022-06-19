@@ -19,6 +19,8 @@ class MainWindow:
         self.used_ram.set("Loading...")
         self.cpu_used = StringVar()
         self.cpu_used.set("Loading...")
+        self.cpu_temperature = StringVar()
+        self.cpu_temperature.set("Loading...")
 
         max_freq_dir = Utils.find_files(
             "cpuinfo_max_freq", "/sys/devices/system/cpu/cpufreq/"
@@ -78,11 +80,14 @@ class MainWindow:
         # Set current governor as default
         self.gov_combo.current(available_governors.index(Utils.get_current_gov()))
 
+        ttk.Label(frm, text="CPU temperature: ", borderwidth=20).grid(column=0, row=7)
+        ttk.Label(frm, textvariable=self.cpu_temperature).grid(column=1, row=7)
+
         if os.geteuid() != 0:
-            ttk.Label(frm, text="Watch out. If you run without root some functions will not be available", foreground="red", borderwidth=20).grid(column=0, row=7)
+            ttk.Label(frm, text="Watch out. If you run without root some functions will not be available", foreground="red", borderwidth=20).grid(column=0, row=8)
 
     def start(self):
-        self.update_thread = UpdateThread(self.cur_governor, self.cur_freq, self.used_ram, self.cpu_used, self.gov_combo, self.clus_num, self.temp)
+        self.update_thread = UpdateThread(self.cur_governor, self.cur_freq, self.used_ram, self.cpu_used, self.gov_combo, self.clus_num, self.temp, self.cpu_temperature)
         # self.threads.append(main_thread)
         self.update_thread.start()
 

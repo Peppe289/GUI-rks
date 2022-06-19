@@ -35,3 +35,10 @@ class Utils:
         for x in range(cluster):
             with open("/sys/devices/system/cpu/cpufreq/policy" + str(x) + "/scaling_governor", 'w') as f:
                 f.write(newgovernor)
+
+    @staticmethod
+    def get_themal():
+        with open("/sys/class/thermal/thermal_zone0/temp") as f:
+            temp_info = int(f.readlines()[0])
+        return str(temp_info / 1000)
+

@@ -6,7 +6,7 @@ import psutil
 import os
 
 class UpdateThread(Thread):
-    def __init__(self, cur_governor, cur_freq, used_ram, cpu_used, gov_combo, clus_num, temp):
+    def __init__(self, cur_governor, cur_freq, used_ram, cpu_used, gov_combo, clus_num, temp, cpu_temperature):
         Thread.__init__(self)
         self.is_stopped = False
         self.cur_governor = cur_governor
@@ -16,6 +16,7 @@ class UpdateThread(Thread):
         self.gov_combo = gov_combo
         self.clus_num = clus_num
         self.temp = temp
+        self.cpu_temperature = cpu_temperature
 
     def run(self):
         try:
@@ -24,6 +25,7 @@ class UpdateThread(Thread):
                 self.cur_governor.set(Utils.get_current_gov())
                 self.used_ram.set(str(psutil.virtual_memory().percent) + "%")
                 self.cpu_used.set(str(psutil.cpu_percent()) + "%")
+                self.cpu_temperature.set(str(Utils.get_themal() + "°"))
                 # write all file with this directory:
                 # /sys/devices/system/cpu/cpufreq/policy<X>/scaling_governor
                 # change governor only when select different gov in box
