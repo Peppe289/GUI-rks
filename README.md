@@ -26,11 +26,18 @@ Built with python resources you can:
     
 ### Install dependencies
 
-You can install all modules with `sudo` or without.
+Install TK. For Ubuntu:
+
+    sudo apt install python3-tk
+
+For other, you can install all modules with `sudo` or without.
 
 #### Install with sudo
 
-Install all the modules with `sudo pip3 install -r requirements.txt`
+Install all the modules with
+
+    sudo pip3 install -r requirements.txt
+
 
 #### Install without sudo
 Install all the modules without sudo:
