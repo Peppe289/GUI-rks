@@ -25,7 +25,7 @@ class UpdateThread(Thread):
                 self.cur_governor.set(Utils.get_current_gov())
                 self.used_ram.set(str(psutil.virtual_memory().percent) + "%")
                 self.cpu_used.set(str(psutil.cpu_percent()) + "%")
-                self.cpu_temperature.set(str(Utils.get_themal() + "°"))
+                self.cpu_temperature.set(str(Utils.get_themal()))
                 # write all file with this directory:
                 # /sys/devices/system/cpu/cpufreq/policy<X>/scaling_governor
                 # change governor only when select different gov in box
