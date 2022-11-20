@@ -21,6 +21,8 @@ class MainWindow:
         self.cpu_used.set("Loading...")
         self.cpu_temperature = StringVar()
         self.cpu_temperature.set("Loading...")
+        self.battery = StringVar()
+        self.battery.set("Loading...")
 
         max_freq_dir = Utils.find_files(
             "cpuinfo_max_freq", "/sys/devices/system/cpu/cpufreq/"
@@ -83,11 +85,14 @@ class MainWindow:
         ttk.Label(frm, text="CPU temperature: ", borderwidth=20).grid(column=0, row=7)
         ttk.Label(frm, textvariable=self.cpu_temperature).grid(column=1, row=7)
 
+        ttk.Label(frm, text="Battery level: ", borderwidth=20).grid(column=0, row=8)
+        ttk.Label(frm, textvariable=self.battery).grid(column=1, row=8)
+
         if os.geteuid() != 0:
-            ttk.Label(frm, text="Watch out. If you run without root some functions will not be available", foreground="red", borderwidth=20).grid(column=0, row=8)
+            ttk.Label(frm, text="Watch out. If you run without root some functions will not be available", foreground="red", borderwidth=20).grid(column=0, row=9)
 
     def start(self):
-        self.update_thread = UpdateThread(self.cur_governor, self.cur_freq, self.used_ram, self.cpu_used, self.gov_combo, self.clus_num, self.temp, self.cpu_temperature)
+        self.update_thread = UpdateThread(self.cur_governor, self.cur_freq, self.used_ram, self.cpu_used, self.gov_combo, self.clus_num, self.temp, self.cpu_temperature, self.battery)
         # self.threads.append(main_thread)
         self.update_thread.start()
 

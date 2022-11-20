@@ -46,3 +46,13 @@ class Utils:
         except:
             return "Not available"
 
+    @staticmethod
+    def battery_level():
+        try:
+            with open("/sys/class/power_supply/BAT0/capacity") as f:
+                temp_info = int(f.readlines()[0])
+            return str(temp_info)
+        except:
+            return "Not available"
+
+    
