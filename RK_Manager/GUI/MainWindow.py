@@ -38,6 +38,10 @@ class MainWindow:
         # number of cluster:
         self.clus_num = len(max_freq_dir)
 
+        # Auto = 2
+        # Max = 0
+        fan_state = ['Max', 'Auto']
+
         with open(max_freq_dir[0]) as f:
             max_freq = int(f.readlines()[0])
 
@@ -88,11 +92,17 @@ class MainWindow:
         ttk.Label(frm, text="Battery level: ", borderwidth=20).grid(column=0, row=8)
         ttk.Label(frm, textvariable=self.battery).grid(column=1, row=8)
 
+        self.fan_temp = Utils.get_fan_state()
+        ttk.Label(frm, text="Fan controll", borderwidth=20).grid(column=0, row=9)
+        self.fan_combo = ttk.Combobox(frm, values=fan_state, state="readonly")
+        self.fan_combo.grid(column=1, row=9)
+        self.fan_combo.current(fan_state.index(Utils.get_fan_state()))
+
         if os.geteuid() != 0:
-            ttk.Label(frm, text="Watch out. If you run without root some functions will not be available", foreground="red", borderwidth=20).grid(column=0, row=9)
+            ttk.Label(frm, text="Watch out. If you run without root some functions will not be available", foreground="red", borderwidth=20).grid(column=0, row=10)
 
     def start(self):
-        self.update_thread = UpdateThread(self.cur_governor, self.cur_freq, self.used_ram, self.cpu_used, self.gov_combo, self.clus_num, self.temp, self.cpu_temperature, self.battery)
+        self.update_thread = UpdateThread(self.cur_governor, self.cur_freq, self.used_ram, self.cpu_used, self.gov_combo, self.clus_num, self.temp, self.cpu_temperature, self.battery, self.fan_temp, self.fan_combo)
         # self.threads.append(main_thread)
         self.update_thread.start()
 

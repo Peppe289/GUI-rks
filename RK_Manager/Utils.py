@@ -37,6 +37,15 @@ class Utils:
                 f.write(newgovernor)
 
     @staticmethod
+    def changeFanState(val):
+        if val == 'Max':
+            val = 0
+        elif val == 'Auto':
+            val = 2
+        with open("/sys/bus/platform/drivers/asus-nb-wmi/asus-nb-wmi/hwmon/hwmon5/pwm1_enable", 'w') as f:
+                f.write(str(val))
+
+    @staticmethod
     def get_themal():
         try:
             with open("/sys/class/thermal/thermal_zone0/temp") as f:
@@ -52,6 +61,18 @@ class Utils:
             with open("/sys/class/power_supply/BAT0/capacity") as f:
                 temp_info = int(f.readlines()[0])
             return str(temp_info)
+        except:
+            return "Not available"
+
+    @staticmethod
+    def get_fan_state():
+        try:
+            with open("/sys/bus/platform/drivers/asus-nb-wmi/asus-nb-wmi/hwmon/hwmon5/pwm1_enable") as f:
+                temp_info = int(f.readline()[0])
+            if temp_info == 2:
+                return "Auto"
+            elif temp_info == 0:
+                return "Max"
         except:
             return "Not available"
 

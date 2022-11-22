@@ -6,7 +6,7 @@ import psutil
 import os
 
 class UpdateThread(Thread):
-    def __init__(self, cur_governor, cur_freq, used_ram, cpu_used, gov_combo, clus_num, temp, cpu_temperature, battery):
+    def __init__(self, cur_governor, cur_freq, used_ram, cpu_used, gov_combo, clus_num, temp, cpu_temperature, battery, temp_fan, fan_combo):
         Thread.__init__(self)
         self.is_stopped = False
         self.cur_governor = cur_governor
@@ -18,6 +18,8 @@ class UpdateThread(Thread):
         self.temp = temp
         self.cpu_temperature = cpu_temperature
         self.battery = battery
+        self.temp_fan = temp_fan
+        self.fan_combo = fan_combo
 
     def run(self):
         try:
@@ -42,6 +44,14 @@ class UpdateThread(Thread):
                     else:
                         print("Please, run as root")
                         self.temp = self.gov_combo.get()
+
+                if self.temp_fan != self.fan_combo.get():
+                        if os.getuid() == 0:
+                            print("Change fan speed from " + self.temp_fan + " to " + self.fan_combo.get())
+                            Utils.changeFanState(self.fan_combo.get())
+                        else:
+                            print("Please, run as root")
+                        self.temp_fan = self.fan_combo.get()
 
                 self.cur_freq.set(Utils.get_current_freq() + " Mhz")
         except RuntimeError:
