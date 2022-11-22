@@ -40,7 +40,7 @@ class MainWindow:
 
         # Auto = 2
         # Max = 0
-        fan_state = ['Max', 'Auto']
+        fan_state = ['Max', 'Auto', 'none']
 
         with open(max_freq_dir[0]) as f:
             max_freq = int(f.readlines()[0])

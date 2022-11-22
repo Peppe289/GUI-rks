@@ -42,6 +42,9 @@ class Utils:
             val = 0
         elif val == 'Auto':
             val = 2
+        if val == 'none':
+            Utils.get_fan_state()
+            return
         with open("/sys/bus/platform/drivers/asus-nb-wmi/asus-nb-wmi/hwmon/hwmon5/pwm1_enable", 'w') as f:
                 f.write(str(val))
 
@@ -74,6 +77,6 @@ class Utils:
             elif temp_info == 0:
                 return "Max"
         except:
-            return "Not available"
+            return "none"
 
     
