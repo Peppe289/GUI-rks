@@ -23,6 +23,8 @@ class MainWindow:
         self.cpu_temperature.set("Loading...")
         self.battery = StringVar()
         self.battery.set("Loading...")
+        self.fan_speed = StringVar()
+        self.fan_speed.set("Loading...")
 
         max_freq_dir = Utils.find_files(
             "cpuinfo_max_freq", "/sys/devices/system/cpu/cpufreq/"
@@ -98,11 +100,14 @@ class MainWindow:
         self.fan_combo.grid(column=1, row=9)
         self.fan_combo.current(fan_state.index(Utils.get_fan_state()))
 
+        ttk.Label(frm, text="Fan speed: ", borderwidth=20).grid(column=0, row=10)
+        ttk.Label(frm, textvariable= self.fan_speed, borderwidth=20).grid(column=1, row=10)
+
         if os.geteuid() != 0:
-            ttk.Label(frm, text="Watch out. If you run without root some functions will not be available", foreground="red", borderwidth=20).grid(column=0, row=10)
+            ttk.Label(frm, text="Watch out. If you run without root some functions will not be available", foreground="red", borderwidth=20).grid(column=0, row=11)
 
     def start(self):
-        self.update_thread = UpdateThread(self.cur_governor, self.cur_freq, self.used_ram, self.cpu_used, self.gov_combo, self.clus_num, self.temp, self.cpu_temperature, self.battery, self.fan_temp, self.fan_combo)
+        self.update_thread = UpdateThread(self.cur_governor, self.cur_freq, self.used_ram, self.cpu_used, self.gov_combo, self.clus_num, self.temp, self.cpu_temperature, self.battery, self.fan_temp, self.fan_combo, self.fan_speed)
         # self.threads.append(main_thread)
         self.update_thread.start()
 

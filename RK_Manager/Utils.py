@@ -79,4 +79,11 @@ class Utils:
         except:
             return "none"
 
-    
+    @staticmethod
+    def get_fan_speed():
+        try:
+            with open("/sys/bus/platform/drivers/asus-nb-wmi/asus-nb-wmi/hwmon/hwmon5/fan1_input") as f:
+                temp_info = str(f.readline())
+            return str(temp_info)
+        except:
+            return "Not available"
