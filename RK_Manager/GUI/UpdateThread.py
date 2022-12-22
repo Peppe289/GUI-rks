@@ -1,5 +1,6 @@
 from ..Utils import Utils
 from ..Fan import FanControl
+from ..Thermal import Thermal
 
 from threading import Thread
 import time
@@ -30,7 +31,7 @@ class UpdateThread(Thread):
                 self.cur_governor.set(Utils.get_current_gov())
                 self.used_ram.set(str(psutil.virtual_memory().percent) + "%")
                 self.cpu_used.set(str(psutil.cpu_percent()) + "%")
-                self.cpu_temperature.set(str(Utils.get_themal()))
+                self.cpu_temperature.set(str(Thermal.get_themal()))
                 self.battery.set(str(Utils.battery_level()))
                 self.fan_speed.set(FanControl.get_fan_speed())
                 # write all file with this directory:
