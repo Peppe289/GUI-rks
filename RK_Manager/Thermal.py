@@ -11,4 +11,3 @@ class Thermal:
         except:
             return "Not available"
 
-

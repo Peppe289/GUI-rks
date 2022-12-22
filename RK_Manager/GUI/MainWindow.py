@@ -1,5 +1,6 @@
 from ..Utils import Utils
 from ..Fan import FanControl
+from ..CPUState import CPUState
 
 from .UpdateThread import UpdateThread
 from tkinter import *
@@ -83,11 +84,11 @@ class MainWindow:
         
         ttk.Label(frm, text="Available Gov: ", borderwidth=20).grid(column=0, row=6)        
         # Governors combobox
-        self.temp = Utils.get_current_gov()
+        self.temp = CPUState.get_current_gov()
         self.gov_combo = ttk.Combobox(frm, values=available_governors, state="readonly")
         self.gov_combo.grid(column=1, row=6)
         # Set current governor as default
-        self.gov_combo.current(available_governors.index(Utils.get_current_gov()))
+        self.gov_combo.current(available_governors.index(CPUState.get_current_gov()))
 
         ttk.Label(frm, text="CPU temperature: ", borderwidth=20).grid(column=0, row=7)
         ttk.Label(frm, textvariable=self.cpu_temperature).grid(column=1, row=7)

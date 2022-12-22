@@ -1,6 +1,7 @@
 from ..Utils import Utils
 from ..Fan import FanControl
 from ..Thermal import Thermal
+from ..CPUState import CPUState
 
 from threading import Thread
 import time
@@ -28,7 +29,7 @@ class UpdateThread(Thread):
         try:
             while not self.is_stopped:
                 time.sleep(1)
-                self.cur_governor.set(Utils.get_current_gov())
+                self.cur_governor.set(CPUState.get_current_gov())
                 self.used_ram.set(str(psutil.virtual_memory().percent) + "%")
                 self.cpu_used.set(str(psutil.cpu_percent()) + "%")
                 self.cpu_temperature.set(str(Thermal.get_themal()))
@@ -43,7 +44,7 @@ class UpdateThread(Thread):
                         # for x in range(self.clus_num):
                         #     with open("/sys/devices/system/cpu/cpufreq/policy" + str(x) + "/scaling_governor", 'w') as f:
                         #         f.write(self.gov_combo.get())
-                        Utils.changeGov(self.gov_combo.get(), self.clus_num)
+                        CPUState.changeGov(self.gov_combo.get(), self.clus_num)
                         self.temp = self.gov_combo.get()
                     else:
                         print("Please, run as root")
@@ -57,7 +58,7 @@ class UpdateThread(Thread):
                             print("Please, run as root")
                         self.temp_fan = self.fan_combo.get()
 
-                self.cur_freq.set(Utils.get_current_freq() + " Mhz")
+                self.cur_freq.set(CPUState.get_current_freq() + " Mhz")
         except RuntimeError:
             pass
 
