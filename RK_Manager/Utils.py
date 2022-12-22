@@ -45,7 +45,7 @@ class Utils:
         if val == 'none':
             Utils.get_fan_state()
             return
-        with open("/sys/bus/platform/drivers/asus-nb-wmi/asus-nb-wmi/hwmon/hwmon5/pwm1_enable", 'w') as f:
+        with open("/sys/bus/platform/drivers/asus-nb-wmi/asus-nb-wmi/hwmon/hwmon6/pwm1_enable", 'w') as f:
                 f.write(str(val))
 
     @staticmethod
@@ -70,7 +70,7 @@ class Utils:
     @staticmethod
     def get_fan_state():
         try:
-            with open("/sys/bus/platform/drivers/asus-nb-wmi/asus-nb-wmi/hwmon/hwmon5/pwm1_enable") as f:
+            with open("/sys/bus/platform/drivers/asus-nb-wmi/asus-nb-wmi/hwmon/hwmon6/pwm1_enable") as f:
                 temp_info = int(f.readline()[0])
             if temp_info == 2:
                 return "Auto"
@@ -82,7 +82,7 @@ class Utils:
     @staticmethod
     def get_fan_speed():
         try:
-            with open("/sys/bus/platform/drivers/asus-nb-wmi/asus-nb-wmi/hwmon/hwmon5/fan1_input") as f:
+            with open("/sys/bus/platform/drivers/asus-nb-wmi/asus-nb-wmi/hwmon/hwmon6/fan1_input") as f:
                 temp_info = str(f.readline())
             return str(temp_info)
         except:
