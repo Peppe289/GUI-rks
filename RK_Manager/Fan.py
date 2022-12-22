@@ -19,6 +19,8 @@ class FanControl:
                 return "Auto"
             elif temp_info == 0:
                 return "Max"
+            else:
+                "none"
         except:
             return "none"
 
