@@ -1,4 +1,5 @@
 from ..Utils import Utils
+from ..fan import FanControl
 
 from threading import Thread
 import time
@@ -31,7 +32,7 @@ class UpdateThread(Thread):
                 self.cpu_used.set(str(psutil.cpu_percent()) + "%")
                 self.cpu_temperature.set(str(Utils.get_themal()))
                 self.battery.set(str(Utils.battery_level()))
-                self.fan_speed.set(Utils.get_fan_speed())
+                self.fan_speed.set(FanControl.get_fan_speed())
                 # write all file with this directory:
                 # /sys/devices/system/cpu/cpufreq/policy<X>/scaling_governor
                 # change governor only when select different gov in box
@@ -50,7 +51,7 @@ class UpdateThread(Thread):
                 if self.temp_fan != self.fan_combo.get():
                         if os.getuid() == 0:
                             print("Change fan speed from " + self.temp_fan + " to " + self.fan_combo.get())
-                            Utils.changeFanState(self.fan_combo.get())
+                            FanControl.changeFanState(self.fan_combo.get())
                         else:
                             print("Please, run as root")
                         self.temp_fan = self.fan_combo.get()

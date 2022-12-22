@@ -1,4 +1,5 @@
 from ..Utils import Utils
+from ..fan import FanControl
 
 from .UpdateThread import UpdateThread
 from tkinter import *
@@ -94,11 +95,11 @@ class MainWindow:
         ttk.Label(frm, text="Battery level: ", borderwidth=20).grid(column=0, row=8)
         ttk.Label(frm, textvariable=self.battery).grid(column=1, row=8)
 
-        self.fan_temp = Utils.get_fan_state()
+        self.fan_temp = FanControl.get_fan_state()
         ttk.Label(frm, text="Fan controll", borderwidth=20).grid(column=0, row=9)
         self.fan_combo = ttk.Combobox(frm, values=fan_state, state="readonly")
         self.fan_combo.grid(column=1, row=9)
-        self.fan_combo.current(fan_state.index(Utils.get_fan_state()))
+        self.fan_combo.current(fan_state.index(FanControl.get_fan_state()))
 
         ttk.Label(frm, text="Fan speed: ", borderwidth=20).grid(column=0, row=10)
         ttk.Label(frm, textvariable= self.fan_speed, borderwidth=20).grid(column=1, row=10)
