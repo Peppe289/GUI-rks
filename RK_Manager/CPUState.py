@@ -8,11 +8,14 @@ class CPUState:
                 f.write(newgovernor)
 
     @staticmethod
-    def get_current_freq():
-        with open(
-            "/sys/devices/system/cpu/cpufreq/policy0/scaling_cur_freq"
-        ) as f:
-            current_freq = f.readlines()[0]
+    def get_current_freq(cpun):
+        calc = 0
+        # in this way when can see stimate freq of all cpu
+        for x in range(cpun):
+            with open("/sys/devices/system/cpu/cpufreq/policy" + str(x) + "/scaling_cur_freq") as f:
+                calc = int(f.readlines()[0]) + calc
+
+        current_freq = calc / cpun
         # return in Mhz
         return str(int(int(current_freq) / 1000)).strip()
 

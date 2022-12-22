@@ -58,7 +58,7 @@ class UpdateThread(Thread):
                             print("Please, run as root")
                         self.temp_fan = self.fan_combo.get()
 
-                self.cur_freq.set(CPUState.get_current_freq() + " Mhz")
+                self.cur_freq.set(CPUState.get_current_freq(self.clus_num) + " Mhz")
         except RuntimeError:
             pass
 
