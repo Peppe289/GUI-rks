@@ -1,5 +1,5 @@
 from ..Utils import Utils
-from ..fan import FanControl
+from ..Fan import FanControl
 
 from threading import Thread
 import time

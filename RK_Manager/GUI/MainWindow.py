@@ -1,5 +1,5 @@
 from ..Utils import Utils
-from ..fan import FanControl
+from ..Fan import FanControl
 
 from .UpdateThread import UpdateThread
 from tkinter import *
