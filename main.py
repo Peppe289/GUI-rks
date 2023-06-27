@@ -44,8 +44,8 @@ class set_current_gov_thread(QThread):
             self.update_label_signal.emit(text[0])
             time.sleep(1)
 
-class get_online_cpu_thread(QThread):
-    update_label_signal = pyqtSignal(str)
+class get_online_cpu_usage(QThread):
+    update_label_signal = pyqtSignal(list)
 
     def __init__(self):
         super().__init__()
@@ -55,9 +55,11 @@ class get_online_cpu_thread(QThread):
         #cpu_usage.restype = ctypes.c_int
         while(1):
             #text = cpu_usage()
-            text = psutil.cpu_percent()
+            text = ['', 0]
+            text[1] = psutil.cpu_percent()
             # print(text)
-            text = "CPU Usage: " + str(text) + "%"
+            text[0] = "CPU Usage: " + str(text[1]) + "%"
+            text[1] = int(text[1])
             # Emit the update_label_signal with the new label text
             self.update_label_signal.emit(text)
             time.sleep(1)
@@ -139,8 +141,15 @@ def clear_ram():
 def change_governor(data):
     #cpu_governor.setCurrentText(data)
     #print(data)
+
+    global counter
+    if counter == 0:
+        counter = counter + 1
+        return
+
     try:
-        file = open("/sys/devices/system/cpu/cpufreq/policy0/scaling_governor", "w")
+        file = open("/sys/devices/system/cpu/cpufreq/policy0/scaling_governor", "+r")
+        text = file.read()
         file.write(data)
         file.close()
         print_on_label("Changed governor to " + data + "\n")
@@ -167,7 +176,7 @@ def main():
     window_width = 700
 
     global counter
-    counter = 1
+    counter = 0
 
     # Create a main window
     global window
@@ -179,7 +188,7 @@ def main():
     # Create a label widget
     global label
     label = QLabel(window)
-    label_height = 300
+    label_height = 230
     label_width = window_width - 4
     lab_y = window_height - label_height
     label.setGeometry(2, lab_y, label_width, label_height)
@@ -224,8 +233,16 @@ def main():
     online_cpu = QLabel()
     online_cpu.setMinimumSize(int(group_size.width() / 2) - 2, 30)
     layout_right.addWidget(online_cpu)
-    online_cpu_thread = get_online_cpu_thread()
-    online_cpu_thread.update_label_signal.connect(lambda new_text: online_cpu.setText(new_text))
+
+    cpu_usage_bar = QProgressBar()
+    cpu_usage_bar.setMaximumSize(group_size.width() - 2, 15)
+    cpu_usage_bar.setMinimum(0)
+    cpu_usage_bar.setMaximum(100)
+    layout_right.addWidget(cpu_usage_bar)
+
+    online_cpu_thread = get_online_cpu_usage()
+    online_cpu_thread.update_label_signal.connect(lambda new_text: online_cpu.setText(new_text[0]))
+    online_cpu_thread.update_label_signal.connect(lambda new_text: cpu_usage_bar.setValue(new_text[1]))
     online_cpu_thread.start()
 
     # show ram usage
