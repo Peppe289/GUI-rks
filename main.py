@@ -16,8 +16,11 @@ class get_ram_usage(QThread):
     def run(self):
         while 1:
             text = [' ', 0]
-            text[0] = "Ram usage: " + str(psutil.virtual_memory().percent) + "%"
-            text[1] = int(psutil.virtual_memory().percent)
+            memstats = libRKM.memory_percentage
+            memstats.restype = ctypes.c_double
+            percent = memstats()
+            text[0] = "Ram usage: " + str(percent) + "%"
+            text[1] = int(percent)
             self.update_label_signal.emit(text)
             time.sleep(1)
 
