@@ -152,7 +152,6 @@ def change_governor(data):
 
     try:
         file = open("/sys/devices/system/cpu/cpufreq/policy0/scaling_governor", "+r")
-        text = file.read()
         file.write(data)
         file.close()
         print_on_label("Changed governor to " + data + "\n")
