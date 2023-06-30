@@ -53,21 +53,15 @@ struct meminfo MemoryStats() {
 double memory_percentage() {
     struct meminfo data;
     unsigned long int buff;
-    data = MemoryStats();
     char string[BUFFER_SIZE];
     double ret;
 
-    // memoria utilizzata
+    data = MemoryStats();
     buff = data.total - data.available;
-    //printf("\n%ld\n",  buff);
-
     ret = (double)((double)buff / (double)data.total) * 100;
-
-    //printf("\nbruh: %lf\n", ret);
 
     sprintf(string, "%lf", ret);
     sscanf(string, "%4lf", &ret);
-    
 
     return ret;
 }
