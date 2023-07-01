@@ -3,7 +3,7 @@ import ctypes
 import time
 import psutil
 
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QMessageBox, QVBoxLayout, QGroupBox, QComboBox, QProgressBar
+from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QLabel, QPushButton, QMessageBox, QVBoxLayout, QGroupBox, QComboBox, QProgressBar, QTabWidget
 from PyQt6.QtGui import QPalette, QColor, QFont
 from PyQt6.QtCore import Qt, QThread, pyqtSignal
 
@@ -116,16 +116,16 @@ def show_popup():
     message_box.exec()
 
 def print_on_label(data):
-    global counter
-    counter = counter + 1
-
-    if counter > 10:
-        label.setText("")
-        counter = 1
-    
-    text = label.text()
-    text = text + data
-    label.setText(text)
+    print(data)
+    #global counter
+    #counter = counter + 1
+    #if counter > 10:
+    #    label.setText("")
+    #    counter = 1
+    #
+    #text = label.text()
+    #text = text + data
+    #label.setText(text)
 
 def clear_ram():
     clear_ram = libRKM.clear_ram
@@ -141,32 +141,14 @@ def clear_ram():
         print_on_label("Clear RAM: done\n")
         #text = text + "Clear RAM: done\n"
 
-def info_box():
-    #box = QApplication(sys.argv)
-    #set_dark_theme(box)
-
-    box = QMainWindow()
-    box.setWindowTitle("Info box")
-    box.setGeometry(0, 0, 300, 400)
-    box.show()
-    label = QLabel(box)
-    label.setGeometry(0,0, 200, 300)
-
-    #message_box = QMessageBox()
-    #message_box.setWindowTitle("Info box")
-    #message_box.setText("bruh")
-    ## message_box.setIcon(QMessageBox.Icon.Critical)
-    #message_box.setStandardButtons(QMessageBox.StandardButton.Ok)
-    #message_box.exec()
-
 def change_governor(data):
     #cpu_governor.setCurrentText(data)
     #print(data)
 
-    global counter
-    if counter == 0:
-        counter = counter + 1
-        return
+    #global counter
+    #if counter == 0:
+    #    counter = counter + 1
+    #    return
 
     try:
         file = open("/sys/devices/system/cpu/cpufreq/policy0/scaling_governor", "+r")
@@ -179,7 +161,6 @@ def change_governor(data):
 def main():
     # Create the application
     app = QApplication(sys.argv)
-
     # some init here
     load_libRKM()
     set_dark_theme(app)
@@ -195,8 +176,8 @@ def main():
     window_height = 500
     window_width = 700
 
-    global counter
-    counter = 0
+    #global counter
+    #counter = 0
 
     # Create a main window
     global window
@@ -205,26 +186,23 @@ def main():
     window.setGeometry(int(width) - int(window_width / 2), int(height) - int(window_height / 2), window_width, window_height)
     window.setFixedSize(window_width, window_height)
 
-    # Create a label widget
-    global label
-    label = QLabel(window)
-    label_height = 230
-    label_width = window_width - 4
-    lab_y = window_height - label_height
-    label.setGeometry(2, lab_y, label_width, label_height)
-
-    # Create a font for the label
-    font = QFont("Arial", 10, QFont.Weight.Bold)
-    label.setFont(font)
-    # Set text alignment
-    label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
-    label.setStyleSheet("background-color: black; color: white; border-radius; border-radius: 25px; margin: auto")
+    # create main tab
+    tab_widget = QTabWidget(window)
+    control = QWidget() # sched for control
+    info = QWidget() # sched for info
+    tab_widget.addTab(control, "Control")
+    tab_widget.addTab(info, "Info")
+    screen_sched = QVBoxLayout()
+    screen_sched.addWidget(tab_widget)
+    control_sched = QWidget()
+    control_sched.setLayout(screen_sched)
+    window.setCentralWidget(control_sched)
 
     # Create a group box
-    group_box_left = QGroupBox("", window)
-    group_box_right = QGroupBox("", window)
-    group_box_left.setGeometry(0, 0, int(window_width / 2), window_height - label_height - 3)
-    group_box_right.setGeometry(int(window_width / 2), 0, int(window_width / 2), window_height - label_height - 3)
+    group_box_left = QGroupBox("", control)
+    group_box_right = QGroupBox("", control)
+    group_box_left.setGeometry(0, 0, int(window_width / 2), window_height - 3)
+    group_box_right.setGeometry(int(window_width / 2), 0, int(window_width / 2), window_height - 3)
     group_size = group_box_left.size()
 
     # Create a layout for the group box
@@ -240,11 +218,6 @@ def main():
     btn_ram.setMinimumSize(int(group_size.width() / 2) - 2, 30)
     btn_ram.clicked.connect(clear_ram)
     layout_left.addWidget(btn_ram)
-
-    btn_info = QPushButton("Info system")
-    btn_info.setMinimumSize(int(group_size.width() / 2) - 2, 30)
-    btn_info.clicked.connect(info_box)
-    layout_left.addWidget(btn_info)
 
     # show cpu usage
     #cpu_label = QLabel()
