@@ -46,22 +46,22 @@ struct meminfo MemoryStats() {
     }
 
     fclose(fp);
-
     return ret;
 }
 
-double memory_percentage() {
+void convert_kb_to_mb(struct meminfo *data) {
+    data->available /= 1024;
+    data->total /= 1024;
+}
+
+float memory_percentage() {
     struct meminfo data;
     unsigned long int buff;
-    char string[BUFFER_SIZE];
     double ret;
 
     data = MemoryStats();
     buff = data.total - data.available;
-    ret = (double)((double)buff / (double)data.total) * 100;
-
-    sprintf(string, "%lf", ret);
-    sscanf(string, "%4lf", &ret);
+    ret = ((float)buff / (float)data.total) * 100;
 
     return ret;
 }

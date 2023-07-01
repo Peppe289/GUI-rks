@@ -17,9 +17,9 @@ class get_ram_usage(QThread):
         while 1:
             text = [' ', 0]
             memstats = libRKM.memory_percentage
-            memstats.restype = ctypes.c_double
+            memstats.restype = ctypes.c_float
             percent = memstats()
-            text[0] = "Ram usage: " + str(percent) + "%"
+            text[0] = "Ram usage: " + str(float(f'{percent:.2f}')) + "%"
             text[1] = int(percent)
             self.update_label_signal.emit(text)
             time.sleep(1)
@@ -141,6 +141,24 @@ def clear_ram():
         print_on_label("Clear RAM: done\n")
         #text = text + "Clear RAM: done\n"
 
+def info_box():
+    #box = QApplication(sys.argv)
+    #set_dark_theme(box)
+
+    box = QMainWindow()
+    box.setWindowTitle("Info box")
+    box.setGeometry(0, 0, 300, 400)
+    box.show()
+    label = QLabel(box)
+    label.setGeometry(0,0, 200, 300)
+
+    #message_box = QMessageBox()
+    #message_box.setWindowTitle("Info box")
+    #message_box.setText("bruh")
+    ## message_box.setIcon(QMessageBox.Icon.Critical)
+    #message_box.setStandardButtons(QMessageBox.StandardButton.Ok)
+    #message_box.exec()
+
 def change_governor(data):
     #cpu_governor.setCurrentText(data)
     #print(data)
@@ -223,15 +241,20 @@ def main():
     btn_ram.clicked.connect(clear_ram)
     layout_left.addWidget(btn_ram)
 
-    # show cpu usage
-    cpu_label = QLabel()
-    cpu_label.setMinimumSize(int(group_size.width() / 2) - 2, 30)
-    layout_right.addWidget(cpu_label)
-    cpu_thread = get_cpu_thread()
-    cpu_thread.update_label_signal.connect(lambda new_text: cpu_label.setText(new_text))
-    cpu_thread.start()
+    btn_info = QPushButton("Info system")
+    btn_info.setMinimumSize(int(group_size.width() / 2) - 2, 30)
+    btn_info.clicked.connect(info_box)
+    layout_left.addWidget(btn_info)
 
-    # show CPU online
+    # show cpu usage
+    #cpu_label = QLabel()
+    #cpu_label.setMinimumSize(int(group_size.width() / 2) - 2, 30)
+    #layout_right.addWidget(cpu_label)
+    #cpu_thread = get_cpu_thread()
+    #cpu_thread.update_label_signal.connect(lambda new_text: cpu_label.setText(new_text))
+    #cpu_thread.start()
+
+    # show CPU usage
     online_cpu = QLabel()
     online_cpu.setMinimumSize(int(group_size.width() / 2) - 2, 30)
     layout_right.addWidget(online_cpu)
