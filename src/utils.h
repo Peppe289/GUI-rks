@@ -6,6 +6,10 @@
 
 #define BUFFER_SIZE     400
 
+#ifndef DT_DIR
+#define DT_DIR  4
+#endif
+
 int clear_ram();
 int online_cpu();
 

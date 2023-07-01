@@ -158,12 +158,27 @@ def change_governor(data):
     except:
         print_on_label("You can't change governor\n")
 
+def maxThread():
+    core_thread = libRKM.max_Thread
+    core_thread.restype = ctypes.c_int
+    return core_thread()
+
 def newFont():
     font = QFont()
     font.setFamily("Arial")
-    font.setPointSize(16)
-    font.setBold(True)
+    font.setPointSize(13)
+    font.setBold(False)
     return font
+
+def checkOnline(path):
+    func = libRKM.cpuOnlineCheck
+    func.argtypes = [ ctypes.c_int ]
+    func.restype = ctypes.c_int
+    return func(path)
+
+def threadState(state, path):
+    print(state)
+    print(path.text())
 
 def main():
     # Create the application
@@ -299,23 +314,32 @@ def main():
     layout_core_left.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
     layout_core_right.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
 
+    bruh_left_core = QLabel("Enable/Disable here core")
+    bruh_left_core.setMaximumHeight(30)
+    bruh_left_core.setFont(newFont())
+    layout_core_left.addWidget(bruh_left_core)
+
     scroll_area = QScrollArea()
     scroll_widget = QWidget()
     scroll_layout = QVBoxLayout(scroll_widget)
-    scroll_area.setMaximumSize(int(window_width / 2) - 20, window_height - 200)
+    scroll_area.setMaximumSize(int(window_width / 2) - 2, int(window_height / 3))
     scroll_area.setWidgetResizable(True)
     scroll_area.setWidget(scroll_widget)
-
     grid_layout = QGridLayout()
     scroll_layout.addLayout(grid_layout)
     scroll_widget.setLayout(scroll_layout)
 
     layout_core_left.addWidget(scroll_area)
 
-    for i in range(99):
-        online_cpu_thread = QCheckBox("Opzione " + str(i))
-        online_cpu_thread.setChecked(True)
-        grid_layout.addWidget(online_cpu_thread,  i // 2, i %2)
+    for i in range(maxThread()):
+        online_cpu_thread = QCheckBox(str(i))
+        if i != 0:
+            online_cpu_thread.setChecked(checkOnline(i))
+        else:
+            online_cpu_thread.setChecked(1)
+            online_cpu_thread.setEnabled(False)
+        grid_layout.addWidget(online_cpu_thread,  i // 4, i % 4)
+        #online_cpu_thread.stateChanged.connect(lambda state: threadState(state, online_cpu_thread))
 
     # info tab
     info_layout = QVBoxLayout(info)
@@ -323,8 +347,6 @@ def main():
     info_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
     info_layout.addWidget(info_label)
     info_label.setFont(newFont())
-
-    #max_thread = 
 
     window.show()
     sys.exit(app.exec())
