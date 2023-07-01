@@ -3,7 +3,7 @@ import ctypes
 import time
 import psutil
 
-from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QLabel, QPushButton, QMessageBox, QVBoxLayout, QGroupBox, QComboBox, QProgressBar, QTabWidget
+from PyQt6.QtWidgets import QApplication, QGridLayout, QWidget, QScrollArea, QMainWindow, QCheckBox, QLabel, QPushButton, QMessageBox, QVBoxLayout, QGroupBox, QComboBox, QProgressBar, QTabWidget
 from PyQt6.QtGui import QPalette, QColor, QFont
 from PyQt6.QtCore import Qt, QThread, pyqtSignal
 
@@ -67,7 +67,7 @@ class get_online_cpu_usage(QThread):
             self.update_label_signal.emit(text)
             time.sleep(1)
 
-class get_cpu_thread(QThread):
+class get_cpu_online(QThread):
     update_label_signal = pyqtSignal(str)
 
     def __init__(self):
@@ -158,6 +158,13 @@ def change_governor(data):
     except:
         print_on_label("You can't change governor\n")
 
+def newFont():
+    font = QFont()
+    font.setFamily("Arial")
+    font.setPointSize(16)
+    font.setBold(True)
+    return font
+
 def main():
     # Create the application
     app = QApplication(sys.argv)
@@ -189,8 +196,10 @@ def main():
     # create main tab
     tab_widget = QTabWidget(window)
     control = QWidget() # sched for control
+    advanced = QWidget() # more option
     info = QWidget() # sched for info
     tab_widget.addTab(control, "Control")
+    tab_widget.addTab(advanced, "Advanced")
     tab_widget.addTab(info, "Info")
     screen_sched = QVBoxLayout()
     screen_sched.addWidget(tab_widget)
@@ -257,7 +266,6 @@ def main():
     ram_usage_bar.setMinimum(0)
     ram_usage_bar.setMaximum(100)
     layout_right.addWidget(ram_usage_bar)
-
     ram_usage_thread.update_label_signal.connect(lambda new_text: ram_usage_bar.setValue(new_text[1]))
     ram_usage_thread.start()
 
@@ -277,6 +285,46 @@ def main():
     cpu_current_gov.start()
     cpu_governor.addItems(text)
     cpu_governor.currentTextChanged.connect(change_governor)
+
+    # advanced tab
+    group_code_box_left = QGroupBox("", advanced)
+    group_code_box_right = QGroupBox("", advanced)
+    group_code_box_left.setGeometry(0, 0, int(window_width / 2), window_height - 3)
+    group_code_box_right.setGeometry(int(window_width / 2), 0, int(window_width / 2), window_height - 3)
+    # Create a layout for the group box
+    layout_core_left = QVBoxLayout()
+    layout_core_right = QVBoxLayout()
+    group_code_box_left.setLayout(layout_core_left)
+    group_code_box_right.setLayout(layout_core_right)
+    layout_core_left.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+    layout_core_right.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+
+    scroll_area = QScrollArea()
+    scroll_widget = QWidget()
+    scroll_layout = QVBoxLayout(scroll_widget)
+    scroll_area.setMaximumSize(int(window_width / 2) - 20, window_height - 200)
+    scroll_area.setWidgetResizable(True)
+    scroll_area.setWidget(scroll_widget)
+
+    grid_layout = QGridLayout()
+    scroll_layout.addLayout(grid_layout)
+    scroll_widget.setLayout(scroll_layout)
+
+    layout_core_left.addWidget(scroll_area)
+
+    for i in range(99):
+        online_cpu_thread = QCheckBox("Opzione " + str(i))
+        online_cpu_thread.setChecked(True)
+        grid_layout.addWidget(online_cpu_thread,  i // 2, i %2)
+
+    # info tab
+    info_layout = QVBoxLayout(info)
+    info_label = QLabel("Bruh")
+    info_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+    info_layout.addWidget(info_label)
+    info_label.setFont(newFont())
+
+    #max_thread = 
 
     window.show()
     sys.exit(app.exec())
