@@ -4,15 +4,16 @@ import time
 import psutil
 
 from PyQt6.QtWidgets import QApplication, QGridLayout, QWidget, QScrollArea, QMainWindow, QCheckBox, QLabel, QPushButton, QMessageBox, QVBoxLayout, QGroupBox, QComboBox, QProgressBar, QTabWidget
-from PyQt6.QtGui import QPalette, QColor, QFont
-from PyQt6.QtCore import Qt, QThread, pyqtSignal
+from PyQt6.QtGui import QPalette, QColor, QFont, QPen, QPainter
+from PyQt6.QtCore import Qt, QThread, pyqtSignal, QTimer
+from PyQt6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
 
 class get_ram_usage(QThread):
     update_label_signal = pyqtSignal(list)
 
     def __init__(self):
         super().__init__()
-    
+
     def run(self):
         while 1:
             text = [' ', 0]
@@ -36,9 +37,6 @@ class set_current_gov_thread(QThread):
             try:
                 with open("/sys/devices/system/cpu/cpufreq/policy0/scaling_governor") as f:
                     text = f.readlines()[0].strip().split(" ")
-                #file = open("/sys/devices/system/cpu/cpufreq/policy0/scaling_governor")
-                #text = file.read()
-                #file.close()
             except:
                 print_on_label("Some error to read current gov\n")
                 text = ['error']
@@ -117,39 +115,19 @@ def show_popup():
 
 def print_on_label(data):
     print(data)
-    #global counter
-    #counter = counter + 1
-    #if counter > 10:
-    #    label.setText("")
-    #    counter = 1
-    #
-    #text = label.text()
-    #text = text + data
-    #label.setText(text)
 
 def clear_ram():
     clear_ram = libRKM.clear_ram
-    # clear_ram.argtypes = [ctypes.c_int]
     clear_ram.restype = ctypes.c_int
     result = clear_ram()
 
     if result != 0:
-        #text = text + "Clear RAM: error to clear ram\n"
         print_on_label("Clear RAM: error to clear ram\n")
         show_popup()
     else:
         print_on_label("Clear RAM: done\n")
-        #text = text + "Clear RAM: done\n"
 
 def change_governor(data):
-    #cpu_governor.setCurrentText(data)
-    #print(data)
-
-    #global counter
-    #if counter == 0:
-    #    counter = counter + 1
-    #    return
-
     try:
         file = open("/sys/devices/system/cpu/cpufreq/policy0/scaling_governor", "+r")
         file.write(data)
@@ -170,8 +148,8 @@ def newFont():
     font.setBold(False)
     return font
 
-def checkOnline(path):
-    func = libRKM.cpuOnlineCheck
+def SingleThreadMaxFreq(path):
+    func = libRKM.SingleThreadMaxFreq
     func.argtypes = [ ctypes.c_int ]
     func.restype = ctypes.c_int
     return func(path)
@@ -214,8 +192,8 @@ def main():
     advanced = QWidget() # more option
     info = QWidget() # sched for info
     tab_widget.addTab(control, "Control")
-    tab_widget.addTab(advanced, "Advanced")
-    tab_widget.addTab(info, "Info")
+    #tab_widget.addTab(advanced, "Advanced")
+    tab_widget.addTab(info, "Stats")
     screen_sched = QVBoxLayout()
     screen_sched.addWidget(tab_widget)
     control_sched = QWidget()
@@ -242,14 +220,6 @@ def main():
     btn_ram.setMinimumSize(int(group_size.width() / 2) - 2, 30)
     btn_ram.clicked.connect(clear_ram)
     layout_left.addWidget(btn_ram)
-
-    # show cpu usage
-    #cpu_label = QLabel()
-    #cpu_label.setMinimumSize(int(group_size.width() / 2) - 2, 30)
-    #layout_right.addWidget(cpu_label)
-    #cpu_thread = get_cpu_thread()
-    #cpu_thread.update_label_signal.connect(lambda new_text: cpu_label.setText(new_text))
-    #cpu_thread.start()
 
     # show CPU usage
     online_cpu = QLabel()
@@ -301,52 +271,59 @@ def main():
     cpu_governor.addItems(text)
     cpu_governor.currentTextChanged.connect(change_governor)
 
-    # advanced tab
-    group_code_box_left = QGroupBox("", advanced)
-    group_code_box_right = QGroupBox("", advanced)
-    group_code_box_left.setGeometry(0, 0, int(window_width / 2), window_height - 3)
-    group_code_box_right.setGeometry(int(window_width / 2), 0, int(window_width / 2), window_height - 3)
-    # Create a layout for the group box
-    layout_core_left = QVBoxLayout()
-    layout_core_right = QVBoxLayout()
-    group_code_box_left.setLayout(layout_core_left)
-    group_code_box_right.setLayout(layout_core_right)
-    layout_core_left.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-    layout_core_right.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-
-    bruh_left_core = QLabel("Enable/Disable here core")
-    bruh_left_core.setMaximumHeight(30)
-    bruh_left_core.setFont(newFont())
-    layout_core_left.addWidget(bruh_left_core)
-
-    scroll_area = QScrollArea()
-    scroll_widget = QWidget()
-    scroll_layout = QVBoxLayout(scroll_widget)
-    scroll_area.setMaximumSize(int(window_width / 2) - 2, int(window_height / 3))
-    scroll_area.setWidgetResizable(True)
-    scroll_area.setWidget(scroll_widget)
-    grid_layout = QGridLayout()
-    scroll_layout.addLayout(grid_layout)
-    scroll_widget.setLayout(scroll_layout)
-
-    layout_core_left.addWidget(scroll_area)
-
-    for i in range(maxThread()):
-        online_cpu_thread = QCheckBox(str(i))
-        if i != 0:
-            online_cpu_thread.setChecked(checkOnline(i))
-        else:
-            online_cpu_thread.setChecked(1)
-            online_cpu_thread.setEnabled(False)
-        grid_layout.addWidget(online_cpu_thread,  i // 4, i % 4)
-        #online_cpu_thread.stateChanged.connect(lambda state: threadState(state, online_cpu_thread))
 
     # info tab
-    info_layout = QVBoxLayout(info)
-    info_label = QLabel("Bruh")
-    info_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-    info_layout.addWidget(info_label)
-    info_label.setFont(newFont())
+    infoStats_layout = QVBoxLayout(info)
+    infoStats_label = QLabel()
+    infoStats_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+    # massive import
+    # add series for CPU usage graph
+    cpuUsageSeries = QLineSeries()
+    cpuUsageChart = QChart()
+    cpuUsageChart.addSeries(cpuUsageSeries)
+    cpuUsageChart.setAnimationOptions(QChart.AnimationOption.AllAnimations)
+    axis_x = QValueAxis()
+    axis_x.setTitleText("X")
+    cpuUsageChart.addAxis(axis_x, Qt.AlignmentFlag.AlignBottom)
+    cpuUsageSeries.attachAxis(axis_x)
+    axis_y = QValueAxis()
+    axis_y.setTitleText("Y")
+    cpuUsageChart.addAxis(axis_y, Qt.AlignmentFlag.AlignLeft)
+    cpuUsageSeries.attachAxis(axis_y)
+    pen = QPen()
+    pen.setWidth(3)
+    cpuUsageSeries.setPen(pen)
+    chart_viewCPU = QChartView(cpuUsageChart)
+    chart_viewCPU.setRenderHint(QPainter.RenderHint.Antialiasing)
+    chart_viewCPU.resize(100, 300)
+    infoStats_layout.addWidget(chart_viewCPU)
+    max_points = 10
+    x_min, x_max = 0, max_points - 1
+    y_min, y_max = 0, 100
+    axis_x.setRange(x_min, x_max)
+    axis_y.setRange(y_min, y_max)
+    axis_x.setLabelsVisible(False)
+    axis_x.setGridLineVisible(False)
+    axis_x.setTitleVisible(False)
+    axis_x.setShadesVisible(False)
+    axis_y.setTitleVisible(False)
+    axis_y.setShadesVisible(False)
+
+    def updateSeriesCPU():
+        # Genera un nuovo valore casuale per l'asse Y
+        y = psutil.cpu_percent()
+        cpuUsageSeries.append(cpuUsageSeries.count(), y)
+        x_min, x_max = cpuUsageSeries.count() - max_points, cpuUsageSeries.count() - 1
+        axis_x.setRange(x_min, x_max)
+
+        # Ridisegna il grafico
+        chart_viewCPU.repaint()
+    
+    timer = QTimer()
+    timer.timeout.connect(updateSeriesCPU)
+    timer.start(1000)  # 1000 millisecondi = 1 secondo
+    # END GRAPH
 
     window.show()
     sys.exit(app.exec())

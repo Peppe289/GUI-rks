@@ -33,48 +33,14 @@ int max_Thread(void) {
     return count;
 }
 
-int cpuOnlineCheck(int dir) {
+int SingleThreadMaxFreq(int thread) {
     FILE *fp;
     char buff[BUFFER_SIZE];
     int value;
 
-    sprintf(buff, "/sys/devices/system/cpu/cpu%d/online", dir);
+    sprintf(buff, "/sys/devices/system/cpu/cpufreq/policy%d/cpuinfo_max_freq", thread);
 
     fp = fopen(buff, "r");
-
-    if (fp == NULL)
-        return 0;
-    
-    fscanf(fp, "%d", &value);
-
-    return value;
-}
-
-void cpuOnlineCheck(int dir) {
-    FILE *fp;
-    char buff[BUFFER_SIZE];
-    int value;
-
-    sprintf(buff, "/sys/devices/system/cpu/cpu%d/online", dir);
-
-    fp = fopen(buff, "r");
-
-    if (fp == NULL)
-        return 0;
-    
-    fscanf(fp, "%d", &value);
-
-    return value;
-}
-
-void cpuOnlineChange(int dir) {
-    FILE *fp;
-    char buff[BUFFER_SIZE];
-    int value;
-
-    sprintf(buff, "/sys/devices/system/cpu/cpu%d/online", dir);
-
-    fp = fopen(buff, "w");
 
     if (fp == NULL)
         return 0;
