@@ -202,39 +202,37 @@ def main():
 
     # Create a group box
     ctrlMainLayout = QVBoxLayout(control)
-    group_box_left = QGroupBox("")
-    group_box_right = QGroupBox("")
-    group_box_left.setMinimumSize(window_width - 10, window_height - 3)
-    group_box_right.setMinimumSize(window_width - 10, window_height - 3)
-    group_size = group_box_left.size()
+    group_box_top = QGroupBox("")
+    group_box_bottom = QGroupBox("")
+    group_box_top.setMinimumSize(window_width - 10, window_height - 3)
+    group_box_bottom.setMinimumSize(window_width - 10, window_height - 3)
+    group_size = group_box_top.size()
 
-    ctrlMainLayout.addWidget(group_box_left)
-    ctrlMainLayout.addWidget(group_box_right)
+    ctrlMainLayout.addWidget(group_box_top)
+    ctrlMainLayout.addWidget(group_box_bottom)
 
     # Create a layout for the group box
-    layout_left = QVBoxLayout(group_box_left)
-    layout_right = QVBoxLayout(group_box_right)
-    #group_box_left.setLayout(layout_left)
-    #group_box_right.setLayout(layout_right)
+    layout_top = QVBoxLayout(group_box_top)
+    layout_bottom = QVBoxLayout(group_box_bottom)
 
-    layout_left.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-    layout_right.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+    layout_top.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+    layout_bottom.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
 
     btn_ram = QPushButton("Clear RAM")
-    btn_ram.setMinimumSize(int(width / 2) - 10, 30)
+    btn_ram.setMaximumSize(200, 30)
     btn_ram.clicked.connect(clear_ram)
-    layout_left.addWidget(btn_ram)
+    layout_top.addWidget(btn_ram)
 
     # show CPU usage
     online_cpu = QLabel()
     online_cpu.setMinimumSize(int(width / 2) - 2, 30)
-    layout_right.addWidget(online_cpu)
+    layout_bottom.addWidget(online_cpu)
 
     cpu_usage_bar = QProgressBar()
     cpu_usage_bar.setMinimumSize(group_size.width() - 2, 15)
     cpu_usage_bar.setMinimum(0)
     cpu_usage_bar.setMaximum(100)
-    layout_right.addWidget(cpu_usage_bar)
+    layout_bottom.addWidget(cpu_usage_bar)
 
     online_cpu_thread = get_online_cpu_usage()
     online_cpu_thread.update_label_signal.connect(lambda new_text: online_cpu.setText(new_text[0]))
@@ -245,7 +243,7 @@ def main():
     ram_usage = QLabel()
 
     ram_usage.setMinimumSize(int(width / 2) - 2, 30)
-    layout_right.addWidget(ram_usage)
+    layout_bottom.addWidget(ram_usage)
 
     ram_usage_thread = get_ram_usage()
     ram_usage_thread.update_label_signal.connect(lambda new_text: ram_usage.setText(new_text[0]))
@@ -254,7 +252,7 @@ def main():
     ram_usage_bar.setMinimumSize(group_size.width() - 2, 15)
     ram_usage_bar.setMinimum(0)
     ram_usage_bar.setMaximum(100)
-    layout_right.addWidget(ram_usage_bar)
+    layout_bottom.addWidget(ram_usage_bar)
     ram_usage_thread.update_label_signal.connect(lambda new_text: ram_usage_bar.setValue(new_text[1]))
     ram_usage_thread.start()
 
@@ -267,8 +265,8 @@ def main():
         text = ['error']
 
     cpu_governor = QComboBox()
-    cpu_governor.setMinimumSize(int(width / 2) - 2, 30)
-    layout_left.addWidget(cpu_governor)
+    cpu_governor.setMaximumSize(200, 30)
+    layout_top.addWidget(cpu_governor)
     cpu_current_gov = set_current_gov_thread()
     cpu_current_gov.update_label_signal.connect(lambda new_text: cpu_governor.setCurrentText(new_text))
     cpu_current_gov.start()
