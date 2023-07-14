@@ -6,7 +6,7 @@ import psutil
 from PyQt6.QtWidgets import QApplication, QGridLayout, QWidget, QScrollArea, QMainWindow, QCheckBox, QLabel, QPushButton, QMessageBox, QVBoxLayout, QGroupBox, QComboBox, QProgressBar, QTabWidget
 from PyQt6.QtGui import QPalette, QColor, QFont, QPen, QPainter, QBrush
 from PyQt6.QtCore import Qt, QThread, pyqtSignal, QTimer
-from PyQt6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
+from PyQt6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis, QLegend
 
 class get_ram_usage(QThread):
     update_label_signal = pyqtSignal(list)
@@ -173,8 +173,8 @@ def main():
     width = width / 2
     height = height / 2
     
-    window_height = 500
-    window_width = 700
+    window_height = int(height)
+    window_width = int(width)
 
     #global counter
     #counter = 0
@@ -184,12 +184,12 @@ def main():
     window = QMainWindow()
     window.setWindowTitle("System Manager")
     window.setGeometry(int(width) - int(window_width / 2), int(height) - int(window_height / 2), window_width, window_height)
-    window.setFixedSize(window_width, window_height)
+    window.setMinimumSize(window_width, window_height)
 
     # create main tab
     tab_widget = QTabWidget(window)
     control = QWidget() # sched for control
-    advanced = QWidget() # more option
+    #advanced = QWidget() # more option
     info = QWidget() # sched for info
     tab_widget.addTab(control, "Control")
     #tab_widget.addTab(advanced, "Advanced")
@@ -201,33 +201,37 @@ def main():
     window.setCentralWidget(control_sched)
 
     # Create a group box
-    group_box_left = QGroupBox("", control)
-    group_box_right = QGroupBox("", control)
-    group_box_left.setGeometry(0, 0, int(window_width / 2), window_height - 3)
-    group_box_right.setGeometry(int(window_width / 2), 0, int(window_width / 2), window_height - 3)
+    ctrlMainLayout = QVBoxLayout(control)
+    group_box_left = QGroupBox("")
+    group_box_right = QGroupBox("")
+    group_box_left.setMinimumSize(window_width - 10, window_height - 3)
+    group_box_right.setMinimumSize(window_width - 10, window_height - 3)
     group_size = group_box_left.size()
 
+    ctrlMainLayout.addWidget(group_box_left)
+    ctrlMainLayout.addWidget(group_box_right)
+
     # Create a layout for the group box
-    layout_left = QVBoxLayout()
-    layout_right = QVBoxLayout()
-    group_box_left.setLayout(layout_left)
-    group_box_right.setLayout(layout_right)
+    layout_left = QVBoxLayout(group_box_left)
+    layout_right = QVBoxLayout(group_box_right)
+    #group_box_left.setLayout(layout_left)
+    #group_box_right.setLayout(layout_right)
 
     layout_left.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
     layout_right.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
 
     btn_ram = QPushButton("Clear RAM")
-    btn_ram.setMinimumSize(int(group_size.width() / 2) - 2, 30)
+    btn_ram.setMinimumSize(int(width / 2) - 10, 30)
     btn_ram.clicked.connect(clear_ram)
     layout_left.addWidget(btn_ram)
 
     # show CPU usage
     online_cpu = QLabel()
-    online_cpu.setMinimumSize(int(group_size.width() / 2) - 2, 30)
+    online_cpu.setMinimumSize(int(width / 2) - 2, 30)
     layout_right.addWidget(online_cpu)
 
     cpu_usage_bar = QProgressBar()
-    cpu_usage_bar.setMaximumSize(group_size.width() - 2, 15)
+    cpu_usage_bar.setMinimumSize(group_size.width() - 2, 15)
     cpu_usage_bar.setMinimum(0)
     cpu_usage_bar.setMaximum(100)
     layout_right.addWidget(cpu_usage_bar)
@@ -240,14 +244,14 @@ def main():
     # show ram usage
     ram_usage = QLabel()
 
-    ram_usage.setMinimumSize(int(group_size.width() / 2) - 2, 30)
+    ram_usage.setMinimumSize(int(width / 2) - 2, 30)
     layout_right.addWidget(ram_usage)
 
     ram_usage_thread = get_ram_usage()
     ram_usage_thread.update_label_signal.connect(lambda new_text: ram_usage.setText(new_text[0]))
 
     ram_usage_bar = QProgressBar()
-    ram_usage_bar.setMaximumSize(group_size.width() - 2, 15)
+    ram_usage_bar.setMinimumSize(group_size.width() - 2, 15)
     ram_usage_bar.setMinimum(0)
     ram_usage_bar.setMaximum(100)
     layout_right.addWidget(ram_usage_bar)
@@ -263,7 +267,7 @@ def main():
         text = ['error']
 
     cpu_governor = QComboBox()
-    cpu_governor.setMinimumSize(int(group_size.width() / 2) - 2, 30)
+    cpu_governor.setMinimumSize(int(width / 2) - 2, 30)
     layout_left.addWidget(cpu_governor)
     cpu_current_gov = set_current_gov_thread()
     cpu_current_gov.update_label_signal.connect(lambda new_text: cpu_governor.setCurrentText(new_text))
@@ -282,7 +286,7 @@ def main():
     cpuUsageSeries = QLineSeries()
     cpuUsageChart = QChart()
     cpuUsageChart.addSeries(cpuUsageSeries)
-    cpuUsageChart.setAnimationOptions(QChart.AnimationOption.AllAnimations)
+    #cpuUsageChart.setAnimationOptions(QChart.AnimationOption.AllAnimations)
     axis_x = QValueAxis()
     axis_x.setTitleText("X")
     cpuUsageChart.addAxis(axis_x, Qt.AlignmentFlag.AlignBottom)
@@ -296,7 +300,7 @@ def main():
     cpuUsageSeries.setPen(pen)
     chart_viewCPU = QChartView(cpuUsageChart)
     chart_viewCPU.setRenderHint(QPainter.RenderHint.Antialiasing)
-    chart_viewCPU.resize(100, 300)
+    #chart_viewCPU.resize(100, 300)
     infoStats_layout.addWidget(chart_viewCPU)
     max_points = 10
     x_min, x_max = 0, max_points - 1
@@ -309,14 +313,15 @@ def main():
     axis_x.setShadesVisible(False)
     axis_y.setTitleVisible(False)
     axis_y.setShadesVisible(False)
-
     cpuUsageChart.setBackgroundBrush(QBrush(QColor(0, 0, 0)))
     axis_x.setLabelsColor(Qt.GlobalColor.white)
     axis_y.setLabelsColor(Qt.GlobalColor.white)
 
     axis_x.setGridLineColor(QColor(70, 70, 70))
     axis_y.setGridLineColor(QColor(70, 70, 70))
-    
+
+    cpuUsageChart.legend().hide()
+
     cpuUsageSeries.setColor(Qt.GlobalColor.white)
     cpuUsageSeries.setPointLabelsColor(Qt.GlobalColor.white)
 
