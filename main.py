@@ -4,7 +4,7 @@ import time
 import psutil
 
 from PyQt6.QtWidgets import QApplication, QGridLayout, QWidget, QScrollArea, QMainWindow, QCheckBox, QLabel, QPushButton, QMessageBox, QVBoxLayout, QGroupBox, QComboBox, QProgressBar, QTabWidget
-from PyQt6.QtGui import QPalette, QColor, QFont, QPen, QPainter
+from PyQt6.QtGui import QPalette, QColor, QFont, QPen, QPainter, QBrush
 from PyQt6.QtCore import Qt, QThread, pyqtSignal, QTimer
 from PyQt6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
 
@@ -309,6 +309,16 @@ def main():
     axis_x.setShadesVisible(False)
     axis_y.setTitleVisible(False)
     axis_y.setShadesVisible(False)
+
+    cpuUsageChart.setBackgroundBrush(QBrush(QColor(0, 0, 0)))
+    axis_x.setLabelsColor(Qt.GlobalColor.white)
+    axis_y.setLabelsColor(Qt.GlobalColor.white)
+
+    axis_x.setGridLineColor(QColor(70, 70, 70))
+    axis_y.setGridLineColor(QColor(70, 70, 70))
+    
+    cpuUsageSeries.setColor(Qt.GlobalColor.white)
+    cpuUsageSeries.setPointLabelsColor(Qt.GlobalColor.white)
 
     def updateSeriesCPU():
         # Genera un nuovo valore casuale per l'asse Y
