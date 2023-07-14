@@ -200,36 +200,39 @@ def main():
     control_sched.setLayout(screen_sched)
     window.setCentralWidget(control_sched)
 
-    # Create a group box
+    # main Box of Controll
     ctrlMainLayout = QVBoxLayout(control)
+
+    # set top box
     group_box_top = QGroupBox("")
-    group_box_bottom = QGroupBox("")
-    group_box_top.setMinimumSize(window_width - 10, window_height - 3)
-    group_box_bottom.setMinimumSize(window_width - 10, window_height - 3)
-    group_size = group_box_top.size()
-
-    ctrlMainLayout.addWidget(group_box_top)
-    ctrlMainLayout.addWidget(group_box_bottom)
-
-    # Create a layout for the group box
     layout_top = QVBoxLayout(group_box_top)
-    layout_bottom = QVBoxLayout(group_box_bottom)
+    group_box_top.setMinimumSize(window_width - 10, int(window_height / 2) - 10)
+    ctrlMainLayout.addWidget(group_box_top)
 
-    layout_top.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-    layout_bottom.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+    widthCTRLMainSize = window_width - 40
 
     btn_ram = QPushButton("Clear RAM")
     btn_ram.setMaximumSize(200, 30)
     btn_ram.clicked.connect(clear_ram)
     layout_top.addWidget(btn_ram)
+    layout_top.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+    layout_top.setContentsMargins(0, 0, 40, 0)
+
+    # set bottom box
+    group_box_bottom = QGroupBox("")
+    layout_bottom = QVBoxLayout(group_box_bottom)
+    group_box_bottom.setMinimumSize(window_width - 10, int(window_height / 2) - 10)
+    layout_bottom.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+    layout_bottom.setContentsMargins(0, 0, 40, 0)
+    ctrlMainLayout.addWidget(group_box_bottom)
 
     # show CPU usage
     online_cpu = QLabel()
-    online_cpu.setMinimumSize(int(width / 2) - 2, 30)
+    online_cpu.setMinimumSize(int(width / 2) - 2, 20)
     layout_bottom.addWidget(online_cpu)
 
     cpu_usage_bar = QProgressBar()
-    cpu_usage_bar.setMinimumSize(group_size.width() - 2, 15)
+    cpu_usage_bar.setMinimumSize(widthCTRLMainSize - 2, 15)
     cpu_usage_bar.setMinimum(0)
     cpu_usage_bar.setMaximum(100)
     layout_bottom.addWidget(cpu_usage_bar)
@@ -249,7 +252,7 @@ def main():
     ram_usage_thread.update_label_signal.connect(lambda new_text: ram_usage.setText(new_text[0]))
 
     ram_usage_bar = QProgressBar()
-    ram_usage_bar.setMinimumSize(group_size.width() - 2, 15)
+    ram_usage_bar.setMinimumSize(widthCTRLMainSize - 2, 15)
     ram_usage_bar.setMinimum(0)
     ram_usage_bar.setMaximum(100)
     layout_bottom.addWidget(ram_usage_bar)
