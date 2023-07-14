@@ -176,9 +176,6 @@ def main():
     window_height = int(height)
     window_width = int(width)
 
-    #global counter
-    #counter = 0
-
     # Create a main window
     global window
     window = QMainWindow()
@@ -189,10 +186,8 @@ def main():
     # create main tab
     tab_widget = QTabWidget(window)
     control = QWidget() # sched for control
-    #advanced = QWidget() # more option
     info = QWidget() # sched for info
     tab_widget.addTab(control, "Control")
-    #tab_widget.addTab(advanced, "Advanced")
     tab_widget.addTab(info, "Stats")
     screen_sched = QVBoxLayout()
     screen_sched.addWidget(tab_widget)
@@ -216,14 +211,14 @@ def main():
     btn_ram.clicked.connect(clear_ram)
     layout_top.addWidget(btn_ram)
     layout_top.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-    layout_top.setContentsMargins(0, 0, 40, 0)
+    layout_top.setContentsMargins(0, 0, 0, 0)
 
     # set bottom box
     group_box_bottom = QGroupBox("")
     layout_bottom = QVBoxLayout(group_box_bottom)
-    group_box_bottom.setMinimumSize(window_width - 10, int(window_height / 2) - 10)
+    group_box_bottom.setMinimumSize(window_width - 40, int(window_height / 2) - 10)
     layout_bottom.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-    layout_bottom.setContentsMargins(0, 0, 40, 0)
+    layout_bottom.setContentsMargins(0, 0, 0, 0)
     ctrlMainLayout.addWidget(group_box_bottom)
 
     # show CPU usage
@@ -233,6 +228,7 @@ def main():
 
     cpu_usage_bar = QProgressBar()
     cpu_usage_bar.setMinimumSize(widthCTRLMainSize - 2, 15)
+    cpu_usage_bar.setMaximumHeight(20)
     cpu_usage_bar.setMinimum(0)
     cpu_usage_bar.setMaximum(100)
     layout_bottom.addWidget(cpu_usage_bar)
@@ -253,6 +249,7 @@ def main():
 
     ram_usage_bar = QProgressBar()
     ram_usage_bar.setMinimumSize(widthCTRLMainSize - 2, 15)
+    ram_usage_bar.setMaximumHeight(20)
     ram_usage_bar.setMinimum(0)
     ram_usage_bar.setMaximum(100)
     layout_bottom.addWidget(ram_usage_bar)
@@ -275,7 +272,6 @@ def main():
     cpu_current_gov.start()
     cpu_governor.addItems(text)
     cpu_governor.currentTextChanged.connect(change_governor)
-
 
     # info tab
     infoStats_layout = QVBoxLayout(info)
