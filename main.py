@@ -201,7 +201,7 @@ def main():
     # set top box
     group_box_top = QGroupBox("")
     layout_top = QVBoxLayout(group_box_top)
-    group_box_top.setMinimumSize(window_width - 10, int(window_height / 2) - 10)
+    group_box_top.setMinimumSize(window_width - 10, int(window_height / 4) - 60)
     ctrlMainLayout.addWidget(group_box_top)
 
     widthCTRLMainSize = window_width - 40
@@ -216,27 +216,69 @@ def main():
     # set bottom box
     group_box_bottom = QGroupBox("")
     layout_bottom = QVBoxLayout(group_box_bottom)
-    group_box_bottom.setMinimumSize(window_width - 40, int(window_height / 2) - 10)
+    group_box_bottom.setMinimumSize(window_width - 40, int((window_height / 4)*3) - 10)
     layout_bottom.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
     layout_bottom.setContentsMargins(0, 0, 0, 0)
     ctrlMainLayout.addWidget(group_box_bottom)
 
-    # show CPU usage
-    online_cpu = QLabel()
-    online_cpu.setMinimumSize(int(width / 2) - 2, 20)
-    layout_bottom.addWidget(online_cpu)
+    # massive import
+    # add series for CPU usage graph
+    cpuUsageSeries = QLineSeries()
+    cpuUsageChart = QChart()
+    cpuUsageChart.addSeries(cpuUsageSeries)
+    #cpuUsageChart.setAnimationOptions(QChart.AnimationOption.AllAnimations)
+    axis_x = QValueAxis()
+    axis_x.setTitleText("X")
+    cpuUsageChart.addAxis(axis_x, Qt.AlignmentFlag.AlignBottom)
+    cpuUsageSeries.attachAxis(axis_x)
+    axis_y = QValueAxis()
+    axis_y.setTitleText("Y")
+    cpuUsageChart.addAxis(axis_y, Qt.AlignmentFlag.AlignLeft)
+    cpuUsageSeries.attachAxis(axis_y)
+    pen = QPen()
+    pen.setWidth(3)
+    cpuUsageSeries.setPen(pen)
+    chart_viewCPU = QChartView(cpuUsageChart)
+    chart_viewCPU.setRenderHint(QPainter.RenderHint.Antialiasing)
+    #chart_viewCPU.resize(100, 300)
+    layout_bottom.addWidget(chart_viewCPU)
+    max_points = 100
+    x_min, x_max = 0, max_points - 1
+    y_min, y_max = 0, 100
+    axis_x.setRange(x_min, x_max)
+    axis_y.setRange(y_min, y_max)
+    axis_x.setLabelsVisible(False)
+    axis_x.setGridLineVisible(False)
+    axis_x.setTitleVisible(False)
+    axis_x.setShadesVisible(False)
+    axis_y.setTitleVisible(False)
+    axis_y.setShadesVisible(False)
+    cpuUsageChart.setBackgroundBrush(QBrush(QColor(0, 0, 0)))
+    axis_x.setLabelsColor(Qt.GlobalColor.white)
+    axis_y.setLabelsColor(Qt.GlobalColor.white)
 
-    cpu_usage_bar = QProgressBar()
-    cpu_usage_bar.setMinimumSize(widthCTRLMainSize - 2, 15)
-    cpu_usage_bar.setMaximumHeight(20)
-    cpu_usage_bar.setMinimum(0)
-    cpu_usage_bar.setMaximum(100)
-    layout_bottom.addWidget(cpu_usage_bar)
+    axis_x.setGridLineColor(QColor(70, 70, 70))
+    axis_y.setGridLineColor(QColor(70, 70, 70))
 
-    online_cpu_thread = get_online_cpu_usage()
-    online_cpu_thread.update_label_signal.connect(lambda new_text: online_cpu.setText(new_text[0]))
-    online_cpu_thread.update_label_signal.connect(lambda new_text: cpu_usage_bar.setValue(new_text[1]))
-    online_cpu_thread.start()
+    cpuUsageChart.legend().hide()
+
+    cpuUsageSeries.setColor(Qt.GlobalColor.white)
+    cpuUsageSeries.setPointLabelsColor(Qt.GlobalColor.white)
+
+    def updateSeriesCPU():
+        # Genera un nuovo valore casuale per l'asse Y
+        y = psutil.cpu_percent()
+        cpuUsageSeries.append(cpuUsageSeries.count(), y)
+        x_min, x_max = cpuUsageSeries.count() - max_points, cpuUsageSeries.count() - 1
+        axis_x.setRange(x_min, x_max)
+
+        # Ridisegna il grafico
+        chart_viewCPU.repaint()
+    
+    timer = QTimer()
+    timer.timeout.connect(updateSeriesCPU)
+    timer.start(1000)  # 1000 millisecondi = 1 secondo
+    # END GRAPH
 
     # show ram usage
     ram_usage = QLabel()
@@ -277,65 +319,6 @@ def main():
     infoStats_layout = QVBoxLayout(info)
     infoStats_label = QLabel()
     infoStats_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-    # massive import
-    # add series for CPU usage graph
-    cpuUsageSeries = QLineSeries()
-    cpuUsageChart = QChart()
-    cpuUsageChart.addSeries(cpuUsageSeries)
-    #cpuUsageChart.setAnimationOptions(QChart.AnimationOption.AllAnimations)
-    axis_x = QValueAxis()
-    axis_x.setTitleText("X")
-    cpuUsageChart.addAxis(axis_x, Qt.AlignmentFlag.AlignBottom)
-    cpuUsageSeries.attachAxis(axis_x)
-    axis_y = QValueAxis()
-    axis_y.setTitleText("Y")
-    cpuUsageChart.addAxis(axis_y, Qt.AlignmentFlag.AlignLeft)
-    cpuUsageSeries.attachAxis(axis_y)
-    pen = QPen()
-    pen.setWidth(3)
-    cpuUsageSeries.setPen(pen)
-    chart_viewCPU = QChartView(cpuUsageChart)
-    chart_viewCPU.setRenderHint(QPainter.RenderHint.Antialiasing)
-    #chart_viewCPU.resize(100, 300)
-    infoStats_layout.addWidget(chart_viewCPU)
-    max_points = 10
-    x_min, x_max = 0, max_points - 1
-    y_min, y_max = 0, 100
-    axis_x.setRange(x_min, x_max)
-    axis_y.setRange(y_min, y_max)
-    axis_x.setLabelsVisible(False)
-    axis_x.setGridLineVisible(False)
-    axis_x.setTitleVisible(False)
-    axis_x.setShadesVisible(False)
-    axis_y.setTitleVisible(False)
-    axis_y.setShadesVisible(False)
-    cpuUsageChart.setBackgroundBrush(QBrush(QColor(0, 0, 0)))
-    axis_x.setLabelsColor(Qt.GlobalColor.white)
-    axis_y.setLabelsColor(Qt.GlobalColor.white)
-
-    axis_x.setGridLineColor(QColor(70, 70, 70))
-    axis_y.setGridLineColor(QColor(70, 70, 70))
-
-    cpuUsageChart.legend().hide()
-
-    cpuUsageSeries.setColor(Qt.GlobalColor.white)
-    cpuUsageSeries.setPointLabelsColor(Qt.GlobalColor.white)
-
-    def updateSeriesCPU():
-        # Genera un nuovo valore casuale per l'asse Y
-        y = psutil.cpu_percent()
-        cpuUsageSeries.append(cpuUsageSeries.count(), y)
-        x_min, x_max = cpuUsageSeries.count() - max_points, cpuUsageSeries.count() - 1
-        axis_x.setRange(x_min, x_max)
-
-        # Ridisegna il grafico
-        chart_viewCPU.repaint()
-    
-    timer = QTimer()
-    timer.timeout.connect(updateSeriesCPU)
-    timer.start(1000)  # 1000 millisecondi = 1 secondo
-    # END GRAPH
 
     window.show()
     sys.exit(app.exec())
