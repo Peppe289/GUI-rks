@@ -102,3 +102,68 @@ void free_dir_data(DirData data)
     free(data->n_file);
     free(data);
 }
+
+/**
+ * Recursively searches for a file path to find.
+ */
+char *find_file(char *dir_path, const char *file)
+{
+    DIR *directory;
+    struct dirent *entry;
+    char tmp[300], *ret;
+    int lenght;
+
+    directory = opendir(dir_path);
+    if (directory == NULL)
+    {
+        fprintf(stderr, "Error to open %s", dir_path);
+        return NULL;
+    }
+
+    ret = NULL;
+
+    while ((entry = readdir(directory)) != NULL)
+    {
+        /** check if is direcotry. **/
+        if (entry->d_type == DT_DIR)
+        {
+            /** skip special dir "." and ".." **/
+            if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0)
+            {
+                sprintf(tmp, "%s%s/", dir_path, entry->d_name);
+
+                /**
+                 * If we are in a folder then we search
+                 * the subfolders recursively.
+                 */
+                ret = find_file(tmp, file);
+
+                /**
+                 * If the return value is not NULL, then the recursion
+                 * led to a successful search for the file then
+                 * we can close the previous recursive calls.
+                 */
+                if (ret != NULL) {
+                    goto exit;
+                }
+            }
+        } else if (entry->d_type == DT_FILE) {
+            /**
+             * Check if the file matches the one you are looking for.
+             * If the file is that then create the heap with that path
+             * and return it.
+             */
+            if (strcmp(entry->d_name, file) == 0) {
+                sprintf(tmp, "%s%s", dir_path, entry->d_name);
+                lenght = strlen(tmp);
+                ret = malloc(lenght * sizeof(char));
+                strcpy(ret, tmp);
+                goto exit;
+            }
+        }
+    }
+
+exit:
+    closedir(directory);
+    return ret;
+}

@@ -16,6 +16,10 @@
 #define DT_DIR  4
 #endif
 
+#ifndef DT_FILE
+#define DT_FILE 8
+#endif
+
 /**************************************
 ***************************************
 ***************************************/
@@ -32,6 +36,7 @@ typedef struct dir_data *DirData;
 DirData collect_dir_info(const char *dir_path);
 int get_dir_n(DirData data);
 void free_dir_data(DirData data);
+char *find_file(char *dir_path, const char *file);
 
 /** end direcotry utils **/
 
@@ -45,5 +50,15 @@ float memory_percentage();
 int clear_ram(void);
 
 /** end memory utils **/
+
+/**************************************
+***************************************
+***************************************/
+
+/** GPU utils **/
+
+int get_gpu_usage();
+
+/** end GPU utils **/
 
 #endif /** __UTILS_RK_H__ **/

@@ -251,10 +251,66 @@ def main():
 
     # GPU tab
     GPU_box = QVBoxLayout(gpu_ctrl)
-    gpu_label = QLabel()
-    gpu_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-    GPU_box.addWidget(gpu_label);
 
+    # massive import
+    # add series for CPU usage graph
+    gpuUsageSeries = QLineSeries()
+    gpuUsageChart = QChart()
+    gpuUsageChart.addSeries(gpuUsageSeries)
+    #cpuUsageChart.setAnimationOptions(QChart.AnimationOption.AllAnimations)
+    gpu_axis_x = QValueAxis()
+    gpu_axis_x.setTitleText("X")
+    gpuUsageChart.addAxis(gpu_axis_x, Qt.AlignmentFlag.AlignBottom)
+    gpuUsageSeries.attachAxis(gpu_axis_x)
+    gpu_axis_y = QValueAxis()
+    gpu_axis_y.setTitleText("Y")
+    gpuUsageChart.addAxis(gpu_axis_y, Qt.AlignmentFlag.AlignLeft)
+    gpuUsageSeries.attachAxis(gpu_axis_y)
+    gpu_pen = QPen()
+    gpu_pen.setWidth(3)
+    gpuUsageSeries.setPen(gpu_pen)
+    chart_viewGPU = QChartView(gpuUsageChart)
+    chart_viewGPU.setRenderHint(QPainter.RenderHint.Antialiasing)
+    GPU_box.addWidget(chart_viewGPU)
+    gpu_max_points = 100
+    gpu_x_min, gpu_x_max = 0, gpu_max_points - 1
+    gpu_y_min, gpu_y_max = 0, 100
+    gpu_axis_x.setRange(gpu_x_min, gpu_x_max)
+    gpu_axis_y.setRange(gpu_y_min, gpu_y_max)
+    gpu_axis_x.setLabelsVisible(False)
+    gpu_axis_x.setGridLineVisible(False)
+    gpu_axis_x.setTitleVisible(False)
+    gpu_axis_x.setShadesVisible(False)
+    gpu_axis_y.setTitleVisible(False)
+    gpu_axis_y.setShadesVisible(False)
+    gpuUsageChart.setBackgroundBrush(QBrush(QColor(0, 0, 0)))
+    gpu_axis_x.setLabelsColor(Qt.GlobalColor.white)
+    gpu_axis_y.setLabelsColor(Qt.GlobalColor.white)
+
+    gpu_axis_x.setGridLineColor(QColor(70, 70, 70))
+    gpu_axis_y.setGridLineColor(QColor(70, 70, 70))
+
+    gpuUsageChart.legend().hide()
+
+    gpuUsageSeries.setColor(Qt.GlobalColor.white)
+    gpuUsageSeries.setPointLabelsColor(Qt.GlobalColor.white)
+
+    def updateSeriesGPU():
+        # Genera un nuovo valore casuale per l'asse Y
+        get_gpu_usage = libRKM.get_gpu_usage
+        get_gpu_usage.restype = ctypes.c_int
+        y = get_gpu_usage()
+        gpuUsageSeries.append(gpuUsageSeries.count(), y)
+        gpu_x_min, gpu_x_max = gpuUsageSeries.count() - gpu_max_points, gpuUsageSeries.count() - 1
+        gpu_axis_x.setRange(gpu_x_min, gpu_x_max)
+
+        # Ridisegna il grafico
+        chart_viewGPU.repaint()
+    
+    timer_gpu = QTimer()
+    timer_gpu.timeout.connect(updateSeriesGPU)
+    timer_gpu.start(1000)  # 1000 millisecondi = 1 secondo
+    # END GRAPH
 
     window.show()
     sys.exit(app.exec())
