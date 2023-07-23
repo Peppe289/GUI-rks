@@ -38,48 +38,11 @@ class set_current_gov_thread(QThread):
                 with open("/sys/devices/system/cpu/cpufreq/policy0/scaling_governor") as f:
                     text = f.readlines()[0].strip().split(" ")
             except:
-                print_on_label("Some error to read current gov\n")
+                show_popup()
                 text = ['error']
                 break
 
             self.update_label_signal.emit(text[0])
-            time.sleep(1)
-
-class get_online_cpu_usage(QThread):
-    update_label_signal = pyqtSignal(list)
-
-    def __init__(self):
-        super().__init__()
-
-    def run(self):
-        #cpu_usage = libRKM.cpu_load
-        #cpu_usage.restype = ctypes.c_int
-        while(1):
-            #text = cpu_usage()
-            text = ['', 0]
-            text[1] = psutil.cpu_percent()
-            # print(text)
-            text[0] = "CPU Usage: " + str(text[1]) + "%"
-            text[1] = int(text[1])
-            # Emit the update_label_signal with the new label text
-            self.update_label_signal.emit(text)
-            time.sleep(1)
-
-class get_cpu_online(QThread):
-    update_label_signal = pyqtSignal(str)
-
-    def __init__(self):
-        super().__init__()
-
-    def run(self):
-        cpu_online = libRKM.online_cpu
-        cpu_online.restype = ctypes.c_int
-        while(1):
-            text = cpu_online()
-            # print(text)
-            text = "CPU Online: " + str(text)
-            # Emit the update_label_signal with the new label text
-            self.update_label_signal.emit(text)
             time.sleep(1)
 
 def load_libRKM():
@@ -113,50 +76,21 @@ def show_popup():
     message_box.setStandardButtons(QMessageBox.StandardButton.Ok)
     message_box.exec()
 
-def print_on_label(data):
-    print(data)
-
 def clear_ram():
     clear_ram = libRKM.clear_ram
     clear_ram.restype = ctypes.c_int
     result = clear_ram()
 
     if result != 0:
-        print_on_label("Clear RAM: error to clear ram\n")
         show_popup()
-    else:
-        print_on_label("Clear RAM: done\n")
 
 def change_governor(data):
     try:
         file = open("/sys/devices/system/cpu/cpufreq/policy0/scaling_governor", "+r")
         file.write(data)
         file.close()
-        print_on_label("Changed governor to " + data + "\n")
     except:
-        print_on_label("You can't change governor\n")
-
-def maxThread():
-    core_thread = libRKM.max_Thread
-    core_thread.restype = ctypes.c_int
-    return core_thread()
-
-def newFont():
-    font = QFont()
-    font.setFamily("Arial")
-    font.setPointSize(13)
-    font.setBold(False)
-    return font
-
-def SingleThreadMaxFreq(path):
-    func = libRKM.SingleThreadMaxFreq
-    func.argtypes = [ ctypes.c_int ]
-    func.restype = ctypes.c_int
-    return func(path)
-
-def threadState(state, path):
-    print(state)
-    print(path.text())
+        show_popup()
 
 def main():
     # Create the application
@@ -165,7 +99,7 @@ def main():
     load_libRKM()
     set_dark_theme(app)
 
-    # take screen info
+    # take screen gpu_ctrl
     # in this way i can spawn window at center of display
     screen_geometry = app.primaryScreen().geometry()
     width = screen_geometry.width()
@@ -185,10 +119,10 @@ def main():
 
     # create main tab
     tab_widget = QTabWidget(window)
-    control = QWidget() # sched for control
-    info = QWidget() # sched for info
-    tab_widget.addTab(control, "Control")
-    tab_widget.addTab(info, "Stats")
+    main_ctrl = QWidget() # sched for main_ctrl
+    gpu_ctrl = QWidget() # sched for gpu_ctrl
+    tab_widget.addTab(main_ctrl, "Main")
+    tab_widget.addTab(gpu_ctrl, "GPU")
     screen_sched = QVBoxLayout()
     screen_sched.addWidget(tab_widget)
     control_sched = QWidget()
@@ -196,7 +130,7 @@ def main():
     window.setCentralWidget(control_sched)
 
     # main Box of Controll
-    ctrlMainLayout = QVBoxLayout(control)
+    ctrlMainLayout = QVBoxLayout(main_ctrl)
 
     # set top box
     group_box_top = QGroupBox("")
@@ -303,7 +237,7 @@ def main():
         with open("/sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors") as f:
             text = f.readlines()[0].strip().split(" ")
     except:
-        print_on_label("Some error to read governos\n")
+        show_popup()
         text = ['error']
 
     cpu_governor = QComboBox()
@@ -315,10 +249,12 @@ def main():
     cpu_governor.addItems(text)
     cpu_governor.currentTextChanged.connect(change_governor)
 
-    # info tab
-    infoStats_layout = QVBoxLayout(info)
-    infoStats_label = QLabel()
-    infoStats_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+    # GPU tab
+    GPU_box = QVBoxLayout(gpu_ctrl)
+    gpu_label = QLabel()
+    gpu_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+    GPU_box.addWidget(gpu_label);
+
 
     window.show()
     sys.exit(app.exec())
