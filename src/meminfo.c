@@ -90,3 +90,17 @@ float memory_percentage() {
 
     return ret;
 }
+
+/**
+ * Clean up RAM usage with sync and drop cache.
+ */
+int clear_ram(void)
+{
+    FILE *cmd;
+    cmd = popen("sync; echo 3 > /proc/sys/vm/drop_caches", "r");
+
+    if (cmd == NULL)
+        return ERROR_POPEN;
+
+    return pclose(cmd);
+}

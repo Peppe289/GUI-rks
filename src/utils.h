@@ -42,6 +42,7 @@ void free_dir_data(DirData data);
 /** memory utils **/
 
 float memory_percentage();
+int clear_ram(void);
 
 /** end memory utils **/
 
