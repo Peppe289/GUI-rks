@@ -81,11 +81,12 @@ int SingleThreadMaxFreq(int thread)
 /**
  * From the index value of my vendor database found,
  * the same index corresponds to the corresponding thermal driver.
- * 
+ *
  * Check in which of the nodes that driver is present
  * (then check which path is dedicated to the CPU).
  */
-static char *get_thermal_drivers_path(const char *vendorID_drivers) {
+static char *get_thermal_drivers_path(const char *vendorID_drivers)
+{
     FILE *cmd, *read;
     int lenght;
     char path[250], buff[50];
@@ -97,6 +98,9 @@ static char *get_thermal_drivers_path(const char *vendorID_drivers) {
     if (cmd == NULL)
         return NULL;
 
+    /**
+     * Read the driver name in each path where a thermal node was found.
+     */
     while (fscanf(cmd, "%s", path) != EOF)
     {
         lenght = strlen(path);
@@ -110,7 +114,11 @@ static char *get_thermal_drivers_path(const char *vendorID_drivers) {
         if (read == NULL)
             continue;
 
-        if (strcmp(buff, vendorID_drivers) == 0) {
+        /**
+         * Check the drivers node to see if it is the correct path.
+         */
+        if (strcmp(buff, vendorID_drivers) == 0)
+        {
             fclose(read);
             goto reg;
         }
@@ -141,19 +149,34 @@ float get_cpu_temp()
     float ret = -1;
     int index;
     char *path;
+    FILE *fp;
 
     /** collect cpuid **/
     cpuid = get_cpu_id_cpp();
     /** get index for my "database" **/
     get_index(index, cpuid->vendorIDString, vendorIDStr, VENDOR_ID_SIZE);
 
+    /** get cpu thermal path. **/
     path = get_thermal_drivers_path(thermalDrivers[index]);
-    if (path == NULL) {
+    if (path == NULL)
+    {
         fprintf(stderr, "\nVendorID Unknown");
         goto exit;
     }
 
-    printf("%s", path);
+    path = realloc(path, (strlen(path) +
+                          strlen("temp1_input")) *
+                             sizeof(char));
+
+    strcat(path, "temp1_input");
+    fp = fopen(path, "r");
+    if (fp == NULL) {
+        free(path);
+        goto exit;
+    }
+
+    fscanf(fp, "%f", &ret);
+    fclose(fp);
     free(path);
 exit:
 
