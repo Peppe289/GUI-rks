@@ -211,7 +211,7 @@ def main():
     
     timer = QTimer()
     timer.timeout.connect(updateSeriesCPU)
-    timer.start(1000)  # 1000 millisecondi = 1 secondo
+    timer.start(500)  # 0.5 sec
     # END GRAPH
 
     # show ram usage
@@ -309,7 +309,7 @@ def main():
     
     timer_gpu = QTimer()
     timer_gpu.timeout.connect(updateSeriesGPU)
-    timer_gpu.start(1000)  # 1000 millisecondi = 1 secondo
+    timer_gpu.start(500)  # 0.5 sec
     # END GRAPH
 
     window.show()
