@@ -19,6 +19,11 @@ class get_ram_usage(QThread):
             text = [' ', 0]
             memstats = libRKM.memory_percentage
             memstats.restype = ctypes.c_float
+
+            test = libRKM.get_cpu_temp
+            test.restype = ctypes.c_float
+            test()
+
             percent = memstats()
             text[0] = "Ram usage: " + str(float(f'{percent:.2f}')) + "%"
             text[1] = int(percent)
