@@ -178,10 +178,10 @@ float get_cpu_temp()
     fscanf(fp, "%f", &ret);
     fclose(fp);
     free(path);
-exit:
 
+exit:
     free(cpuid->vendorIDString);
     free(cpuid->vendorName);
     free(cpuid);
-    return ret;
+    return ret / 1000;
 }

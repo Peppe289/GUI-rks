@@ -19,11 +19,6 @@ class get_ram_usage(QThread):
             text = [' ', 0]
             memstats = libRKM.memory_percentage
             memstats.restype = ctypes.c_float
-
-            test = libRKM.get_cpu_temp
-            test.restype = ctypes.c_float
-            test()
-
             percent = memstats()
             text[0] = "Ram usage: " + str(float(f'{percent:.2f}')) + "%"
             text[1] = int(percent)
@@ -217,6 +212,68 @@ def main():
     timer = QTimer()
     timer.timeout.connect(updateSeriesCPU)
     timer.start(500)  # 0.5 sec
+    # END GRAPH
+
+    # massive import
+    # add series for CPU usage graph
+    cpuUsageSeriesTemp = QLineSeries()
+    cpuUsageChartTemp = QChart()
+    cpuUsageChartTemp.addSeries(cpuUsageSeriesTemp)
+    #cpuUsageChartTemp.setAnimationOptions(QChart.AnimationOption.AllAnimations)
+    axis_x_temp = QValueAxis()
+    axis_x_temp.setTitleText("X")
+    cpuUsageChartTemp.addAxis(axis_x_temp, Qt.AlignmentFlag.AlignBottom)
+    cpuUsageSeriesTemp.attachAxis(axis_x_temp)
+    axis_y_temp = QValueAxis()
+    axis_y_temp.setTitleText("Y")
+    cpuUsageChartTemp.addAxis(axis_y_temp, Qt.AlignmentFlag.AlignLeft)
+    cpuUsageSeriesTemp.attachAxis(axis_y_temp)
+    pen_temp = QPen()
+    pen_temp.setWidth(3)
+    cpuUsageSeriesTemp.setPen(pen_temp)
+    chart_viewCPUTemp = QChartView(cpuUsageChartTemp)
+    chart_viewCPUTemp.setRenderHint(QPainter.RenderHint.Antialiasing)
+    #chart_viewCPUTemp.resize(100, 300)
+    layout_bottom.addWidget(chart_viewCPUTemp)
+    max_points = 100
+    x_min_temp, x_max_temp = 0, max_points - 1
+    y_min_temp, y_max_temp = 0, 100
+    axis_x_temp.setRange(x_min_temp, x_max_temp)
+    axis_y_temp.setRange(y_min_temp, y_max_temp)
+    axis_x_temp.setLabelsVisible(False)
+    axis_x_temp.setGridLineVisible(False)
+    axis_x_temp.setTitleVisible(False)
+    axis_x_temp.setShadesVisible(False)
+    axis_y_temp.setTitleVisible(False)
+    axis_y_temp.setShadesVisible(False)
+    cpuUsageChartTemp.setBackgroundBrush(QBrush(QColor(0, 0, 0)))
+    axis_x_temp.setLabelsColor(Qt.GlobalColor.white)
+    axis_y_temp.setLabelsColor(Qt.GlobalColor.white)
+
+    axis_x_temp.setGridLineColor(QColor(70, 70, 70))
+    axis_y_temp.setGridLineColor(QColor(70, 70, 70))
+
+    cpuUsageChartTemp.legend().hide()
+
+    cpuUsageSeriesTemp.setColor(Qt.GlobalColor.white)
+    cpuUsageSeriesTemp.setPointLabelsColor(Qt.GlobalColor.white)
+
+    cpu_temp = libRKM.get_cpu_temp
+    cpu_temp.restype = ctypes.c_float
+
+    def updateSeriesCPU_temp():
+        # Genera un nuovo valore casuale per l'asse Y
+        y = cpu_temp()
+        cpuUsageSeriesTemp.append(cpuUsageSeriesTemp.count(), y)
+        x_min_temp, x_max_temp = cpuUsageSeriesTemp.count() - max_points, cpuUsageSeriesTemp.count() - 1
+        axis_x_temp.setRange(x_min_temp, x_max_temp)
+
+        # Ridisegna il grafico
+        chart_viewCPUTemp.repaint()
+    
+    timer_cpu_temp = QTimer()
+    timer_cpu_temp.timeout.connect(updateSeriesCPU_temp)
+    timer_cpu_temp.start(500)  # 0.5 sec
     # END GRAPH
 
     # show ram usage
