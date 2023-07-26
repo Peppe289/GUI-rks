@@ -170,7 +170,8 @@ float get_cpu_temp()
 
     strcat(path, "temp1_input");
     fp = fopen(path, "r");
-    if (fp == NULL) {
+    if (fp == NULL)
+    {
         free(path);
         goto exit;
     }
@@ -184,4 +185,65 @@ exit:
     free(cpuid->vendorName);
     free(cpuid);
     return ret / 1000;
+}
+
+/**
+ * Collect possible usable governors. Governors are compiled
+ * equally for all clusters. so just check policy0 to figure
+ * out which ones are available.
+ */
+Policy get_possible_governor()
+{
+    FILE *fp;
+    Policy ret;
+    char buff[BUFFER_SIZE];
+    int length, index = 0;
+
+    fp = fopen(
+        "/sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors", "r");
+
+    if (fp == NULL)
+    {
+        fprintf(stderr, "Error to open %s", "policy0");
+        return NULL;
+    }
+
+    ret = malloc(sizeof(struct policy_attr));
+
+    /** malloc() of at last 1 size. this allow realloc() **/
+    ret->governor = malloc(sizeof(char *));
+
+    while (fprintf(fp, "%s", buff) != EOF)
+    {
+        length = strlen(buff);
+
+        /**
+         * If something has already been allocated then from then
+         * on we have to reallocate one more dimension each time.
+         */
+        if (index > 0)
+            ret = realloc(ret, (index + 1) * sizeof(char *));
+
+        ret->governor[index] = malloc((length + 1) * sizeof(char));
+        strcpy(ret->governor[index], buff);
+
+        index++;
+    }
+
+    fclose(fp);
+
+    /**
+     * If no string could be read into the file then exit with error.
+     * You cannot not have the governor LOL
+     */
+    if (index == 0)
+    {
+        free(ret->governor);
+        free(ret);
+        return NULL;
+    }
+
+    ret->max_governor = index;
+
+    return ret;
 }
