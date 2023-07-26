@@ -110,7 +110,7 @@ char *find_file(char *dir_path, const char *file)
 {
     DIR *directory;
     struct dirent *entry;
-    char tmp[300], *ret;
+    char tmp[BUFFER_SIZE], *ret;
     int lenght;
 
     directory = opendir(dir_path);
@@ -130,7 +130,9 @@ char *find_file(char *dir_path, const char *file)
             /** skip special dir "." and ".." **/
             if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0)
             {
-                sprintf(tmp, "%s%s/", dir_path, entry->d_name);
+                sprintf(tmp, "%s", dir_path);
+                strcat(tmp, entry->d_name);
+                strcat(tmp, "/");
 
                 /**
                  * If we are in a folder then we search
@@ -154,7 +156,8 @@ char *find_file(char *dir_path, const char *file)
              * and return it.
              */
             if (strcmp(entry->d_name, file) == 0) {
-                sprintf(tmp, "%s%s", dir_path, entry->d_name);
+                sprintf(tmp, "%s", dir_path);
+                strcat(tmp, entry->d_name);
                 lenght = strlen(tmp);
                 ret = malloc(lenght * sizeof(char));
                 strcpy(ret, tmp);

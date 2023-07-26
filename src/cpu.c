@@ -89,7 +89,7 @@ static char *get_thermal_drivers_path(const char *vendorID_drivers)
 {
     FILE *cmd, *read;
     int lenght;
-    char path[250], buff[50];
+    char path[BUFFER_SIZE], buff[BUFFER_SIZE / 2];
     char *ret;
 
     /** find thermal node **/

@@ -10,7 +10,7 @@
 
 #define ERROR_POPEN     (-1)
 
-#define BUFFER_SIZE     400
+#define BUFFER_SIZE     255
 
 #ifndef DT_DIR
 #define DT_DIR  4
