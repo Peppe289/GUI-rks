@@ -24,6 +24,9 @@
 extern "C" {
 #endif
 
+#define _likely(x)      __builtin_expect((x), 1)
+#define _unlikely(x)    __builtin_expect((x), 0)
+
 struct dir_data {
     int c_file; /** number of dir in directory **/
     char **n_file; /** directory name **/

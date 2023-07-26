@@ -236,7 +236,7 @@ Policy get_possible_governor()
      * If no string could be read into the file then exit with error.
      * You cannot not have the governor LOL
      */
-    if (index == 0)
+    if (_unlikely(!index))
     {
         free(ret->governor);
         free(ret);
