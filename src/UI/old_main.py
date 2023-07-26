@@ -8,96 +8,10 @@ from PyQt6.QtGui import QPalette, QColor, QFont, QPen, QPainter, QBrush
 from PyQt6.QtCore import Qt, QThread, pyqtSignal, QTimer
 from PyQt6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis, QLegend
 
-class get_ram_usage(QThread):
-    update_label_signal = pyqtSignal(list)
-
-    def __init__(self):
-        super().__init__()
-
-    def run(self):
-        while 1:
-            text = [' ', 0]
-            memstats = libRKM.memory_percentage
-            memstats.restype = ctypes.c_float
-            percent = memstats()
-            text[0] = "Ram usage: " + str(float(f'{percent:.2f}')) + "%"
-            text[1] = int(percent)
-            self.update_label_signal.emit(text)
-            time.sleep(1)
-
-
-class set_current_gov_thread(QThread):
-    update_label_signal = pyqtSignal(str)
-
-    def __init__(self):
-        super().__init__()
-    
-    def run(self):
-        while 1:
-            try:
-                with open("/sys/devices/system/cpu/cpufreq/policy0/scaling_governor") as f:
-                    text = f.readlines()[0].strip().split(" ")
-            except:
-                show_popup()
-                text = ['error']
-                break
-
-            self.update_label_signal.emit(text[0])
-            time.sleep(1)
-
-def load_libRKM():
-    global libRKM
-    libRKM = ctypes.CDLL('./src/libRKM.so')
-
-def set_dark_theme(app):
-    # Create a dark color palette
-    dark_palette = QPalette()
-    dark_palette.setColor(QPalette.ColorRole.Window, QColor(53, 53, 53))
-    dark_palette.setColor(QPalette.ColorRole.WindowText, QColor(255, 255, 255))
-    dark_palette.setColor(QPalette.ColorRole.Base, QColor(25, 25, 25))
-    dark_palette.setColor(QPalette.ColorRole.AlternateBase, QColor(53, 53, 53))
-    dark_palette.setColor(QPalette.ColorRole.ToolTipBase, QColor(255, 255, 255))
-    dark_palette.setColor(QPalette.ColorRole.ToolTipText, QColor(255, 255, 255))
-    dark_palette.setColor(QPalette.ColorRole.Text, QColor(255, 255, 255))
-    dark_palette.setColor(QPalette.ColorRole.Button, QColor(53, 53, 53))
-    dark_palette.setColor(QPalette.ColorRole.ButtonText, QColor(255, 255, 255))
-    dark_palette.setColor(QPalette.ColorRole.BrightText, QColor(255, 0, 0))
-    dark_palette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
-    dark_palette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
-    dark_palette.setColor(QPalette.ColorRole.HighlightedText, QColor(255, 255, 255))
-
-    app.setPalette(dark_palette)
-
-def show_popup():
-    message_box = QMessageBox()
-    message_box.setWindowTitle("Some Error")
-    message_box.setText("I can't make this. Maybe u need to start this as root")
-    message_box.setIcon(QMessageBox.Icon.Critical)
-    message_box.setStandardButtons(QMessageBox.StandardButton.Ok)
-    message_box.exec()
-
-def clear_ram():
-    clear_ram = libRKM.clear_ram
-    clear_ram.restype = ctypes.c_int
-    result = clear_ram()
-
-    if result != 0:
-        show_popup()
-
-def change_governor(data):
-    try:
-        file = open("/sys/devices/system/cpu/cpufreq/policy0/scaling_governor", "+r")
-        file.write(data)
-        file.close()
-    except:
-        show_popup()
-
 def main():
     # Create the application
     app = QApplication(sys.argv)
     # some init here
-    load_libRKM()
-    set_dark_theme(app)
 
     # take screen gpu_ctrl
     # in this way i can spawn window at center of display
@@ -111,7 +25,6 @@ def main():
     window_width = int(width)
 
     # Create a main window
-    global window
     window = QMainWindow()
     window.setWindowTitle("System Manager")
     window.setGeometry(int(width) - int(window_width / 2), int(height) - int(window_height / 2), window_width, window_height)
