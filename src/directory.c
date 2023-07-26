@@ -145,9 +145,8 @@ char *find_file(char *dir_path, const char *file)
                  * led to a successful search for the file then
                  * we can close the previous recursive calls.
                  */
-                if (ret != NULL) {
-                    goto exit;
-                }
+                if (ret != NULL)
+                    break;
             }
         } else if (entry->d_type == DT_FILE) {
             /**
@@ -161,12 +160,11 @@ char *find_file(char *dir_path, const char *file)
                 lenght = strlen(tmp);
                 ret = malloc(lenght * sizeof(char));
                 strcpy(ret, tmp);
-                goto exit;
+                break;
             }
         }
     }
 
-exit:
     closedir(directory);
     return ret;
 }

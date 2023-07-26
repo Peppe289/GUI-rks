@@ -24,12 +24,22 @@
 extern "C" {
 #endif
 
+#define _likely(x)      __builtin_expect((x), 1)
+#define _unlikely(x)    __builtin_expect((x), 0)
+
 struct dir_data {
     int c_file; /** number of dir in directory **/
     char **n_file; /** directory name **/
 };
 
 typedef struct dir_data *DirData;
+
+struct policy_attr {
+    char **governor;
+    int max_governor;
+};
+
+typedef struct policy_attr *Policy;
 
 struct vendor_cpuid {
     unsigned int eax; /** thread **/
@@ -54,6 +64,13 @@ int clear_ram(void);
 /** GPU utils **/
 int get_gpu_usage();
 /** end GPU utils **/
+
+/** CPU Utils **/
+float get_cpu_temp();
+int SingleThreadMaxFreq();
+int max_Thread(void);
+Policy get_possible_governor();
+/** end CPU Utils **/
 
 /** Cpp **/
 void *get_cpu_id_cpp();
