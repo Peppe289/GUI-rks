@@ -21,7 +21,7 @@ class get_ram_usage(QThread):
             time.sleep(1)
 
 class get_gpu_info(QThread):
-    update_label_signal = pyqtSignal(list)
+    update_label_signal = pyqtSignal(str)
 
     def __init__(self, libRKM: ctypes.CDLL):
         super().__init__()
@@ -32,12 +32,12 @@ class get_gpu_info(QThread):
             gpu_percentage = self.libRKM.get_gpu_usage
             gpu_percentage.restype = ctypes.c_float
             gpu_percentage = str(gpu_percentage())
-            text = [gpu_percentage,].join(";")
+            text = ";".join([gpu_percentage,])
             self.update_label_signal.emit(text)
             time.sleep(1)
 
 class get_cpu_info(QThread):
-    update_label_signal = pyqtSignal(list)
+    update_label_signal = pyqtSignal(str)
 
     def __init__(self, libRKM: ctypes.CDLL):
         super().__init__()
@@ -49,7 +49,7 @@ class get_cpu_info(QThread):
             cpu_temp = self.libRKM.get_cpu_temp
             cpu_temp.restype = ctypes.c_float
             cpu_temp = str(cpu_temp())
-            text = [cpu_percentage, cpu_temp].join(";")
+            text = ";".join([cpu_percentage, cpu_temp])
             time.sleep(1)
             self.update_label_signal.emit(text)
 

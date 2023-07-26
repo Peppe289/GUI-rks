@@ -1,12 +1,13 @@
 import sys, ctypes
 from PyQt6 import QtWidgets
 from MainWindow import Ui_MainWindow
+from ThreadWorkers import get_ram_usage, get_cpu_info, get_gpu_info, get_current_gov_thread
 import middleWare
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setupUi(self, parent)
+        self.setupUi(self)
 
         self.libRKM = ctypes.CDLL('./src/libRKM.so')
         
@@ -15,19 +16,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.curr_gov_combobox.currentTextChanged.connect(lambda: middleWare.change_governor(self.curr_gov_combobox.currentText()))
 
         # Connect threads
-        self.get_ram_usage_thread = middleWare.get_ram_usage(self.libRKM)
+        self.get_ram_usage_thread = get_ram_usage(self.libRKM)
         self.get_ram_usage_thread.update_label_signal.connect(lambda: self.update_ram_usage_graph)
         self.get_ram_usage_thread.start()
 
-        self.get_cpu_info_thread = middleWare.get_cpu_info(self.libRKM)
+        self.get_cpu_info_thread = get_cpu_info(self.libRKM)
         self.get_cpu_info_thread.update_label_signal.connect(lambda: self.update_cpu_info)
         self.get_cpu_info_thread.start()
 
-        self.get_gpu_info_thread = middleWare.get_gpu_info(self.libRKM)
+        self.get_gpu_info_thread = get_gpu_info(self.libRKM)
         self.get_gpu_info_thread.update_label_signal.connect(lambda: self.update_gpu_info)
         self.get_gpu_info_thread.start()
 
-        self.get_current_gov_thread = middleWare.set_current_gov_thread()
+        self.get_current_gov_thread = get_current_gov_thread()
         self.get_current_gov_thread.update_label_signal.connect(lambda: self.update_curr_gov_combobox)
         self.get_current_gov_thread.start()
         
@@ -51,10 +52,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     
 
 if __name__ == "__main__":
-    import sys
     app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
+    main_window = QtWidgets.QMainWindow()
+    ui = MainWindow(main_window)
+    ui.setupUi(main_window)
+    ui.show()
     sys.exit(app.exec())
