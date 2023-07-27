@@ -24,3 +24,13 @@ def change_governor(data):
         file.close()
     except:
         show_popup_error()
+
+def get_governors():
+    # show governor profile
+    try:
+        with open("/sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors") as f:
+            text = f.readlines()[0].strip().split(" ")
+    except:
+        show_popup_error()
+
+    return text

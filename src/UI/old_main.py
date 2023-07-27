@@ -195,7 +195,7 @@ def main():
     ram_usage.setMinimumSize(int(width / 2) - 2, 30)
     layout_bottom.addWidget(ram_usage)
 
-    ram_usage_thread = get_ram_usage()
+    ram_usage_thread = GetRamUsageWorker()
     ram_usage_thread.update_label_signal.connect(lambda new_text: ram_usage.setText(new_text[0]))
 
     ram_usage_bar = QProgressBar()
@@ -213,7 +213,6 @@ def main():
             text = f.readlines()[0].strip().split(" ")
     except:
         show_popup()
-        text = ['error']
 
     cpu_governor = QComboBox()
     cpu_governor.setMaximumSize(200, 30)
