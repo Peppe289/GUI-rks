@@ -1,9 +1,10 @@
 import time, psutil, ctypes
-from PyQt6.QtCore import QThread, pyqtSignal
+from PyQt6.QtCore import pyqtSignal, QObject
 from middleWare import show_popup_error
 
-class get_ram_usage(QThread):
-    update_label_signal = pyqtSignal(list)
+class GetRamUsageWorker(QObject):
+    progress = pyqtSignal(str)
+    finished = pyqtSignal()
 
     def __init__(self, libRKM: ctypes.CDLL):
         super().__init__()
@@ -11,17 +12,17 @@ class get_ram_usage(QThread):
 
     def run(self):
         while 1:
-            text = [' ', 0]
             memstats = self.libRKM.memory_percentage
             memstats.restype = ctypes.c_float
             percent = memstats()
-            text[0] = "Ram usage: " + str(float(f'{percent:.2f}')) + "%"
-            text[1] = int(percent)
-            self.update_label_signal.emit(text)
+            text = str(float(f'{percent:.2f}'))
+            self.progress.emit(text)
             time.sleep(1)
+        self.finished.emit()
 
-class get_gpu_info(QThread):
-    update_label_signal = pyqtSignal(str)
+class GetGpuInfoWorker(QObject):
+    progress = pyqtSignal(str)
+    finished = pyqtSignal()
 
     def __init__(self, libRKM: ctypes.CDLL):
         super().__init__()
@@ -33,11 +34,13 @@ class get_gpu_info(QThread):
             gpu_percentage.restype = ctypes.c_float
             gpu_percentage = str(gpu_percentage())
             text = ";".join([gpu_percentage,])
-            self.update_label_signal.emit(text)
+            self.progress.emit(text)
             time.sleep(1)
+        self.finished.emit()
 
-class get_cpu_info(QThread):
-    update_label_signal = pyqtSignal(str)
+class GetCpuInfoWorker(QObject):
+    progress = pyqtSignal(str)
+    finished = pyqtSignal()
 
     def __init__(self, libRKM: ctypes.CDLL):
         super().__init__()
@@ -51,11 +54,12 @@ class get_cpu_info(QThread):
             cpu_temp = str(cpu_temp())
             text = ";".join([cpu_percentage, cpu_temp])
             time.sleep(1)
-            self.update_label_signal.emit(text)
+            self.progress.emit(text)
+        self.finished.emit()
 
-
-class get_current_gov_thread(QThread):
-    update_label_signal = pyqtSignal(str)
+class GetCurrentGovWorker(QObject):
+    progress = pyqtSignal(str)
+    finished = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -65,11 +69,11 @@ class get_current_gov_thread(QThread):
             try:
                 with open("/sys/devices/system/cpu/cpufreq/policy0/scaling_governor") as f:
                     text = f.readlines()[0].strip().split(" ")
-                    print(text)
             except:
                 show_popup_error()
                 text = ['error']
                 break
 
-            self.update_label_signal.emit(text[0])
+            self.progress.emit(text[0])
             time.sleep(1)
+        self.finished.emit()
