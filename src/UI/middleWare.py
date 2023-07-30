@@ -13,7 +13,6 @@ def clear_ram(libRKM: ctypes.CDLL):
     clear_ram = libRKM.clear_ram
     clear_ram.restype = ctypes.c_int
     result = clear_ram()
-    print(result)
     if result != 0:
         show_popup_error()
 

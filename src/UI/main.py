@@ -1,4 +1,4 @@
-import sys, ctypes
+import sys, ctypes, logging
 from PyQt6 import QtWidgets
 from PyQt6.QtCore import QThread
 from MainWindow import Ui_MainWindow
@@ -10,6 +10,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         super().__init__(parent)
         self.setupUi(self)
 
+        self.statistics = {
+            "ram_usage": [],
+            "cpu_usage": [],
+            "gpu_usage": [],
+        }
+
         self.libRKM = ctypes.CDLL('./src/libRKM.so')
         
         # fill governors combobox
@@ -19,9 +25,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.clear_ram_btn.clicked.connect(lambda: middleWare.clear_ram(self.libRKM))
         self.curr_gov_combobox.currentTextChanged.connect(lambda: middleWare.change_governor(self.curr_gov_combobox.currentText()))
 
+        # hide graph x axis
+        self.ram_graph.hideAxis("bottom")
+        self.ram_graph.setLabel('left', 'Usage (%)')
+        self.cpu_graph.hideAxis("bottom")
+        self.cpu_graph.setLabel('left', 'Usage (%)')
+        self.gpu_graph.hideAxis("bottom")
+        self.gpu_graph.setLabel('left', 'Usage (%)')
+
         # Connect threads
         self.create_threads()
-        
+
     def create_threads(self):
         self.threads, self.workers = [], []
 
@@ -45,33 +59,51 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.workers[i].moveToThread(self.threads[i])
             self.threads[i].started.connect(self.workers[i].run)
             self.workers[i].finished.connect(self.threads[i].quit)
-            self.workers[i].finished.connect(self.workers[i].deleteLater)
-            self.threads[i].finished.connect(self.threads[i].deleteLater)
+            # self.workers[i].finished.connect(self.workers[i].deleteLater)
+            # self.threads[i].finished.connect(self.threads[i].deleteLater)
             self.threads[i].start()
+
+    def closeEvent(self, event):
+        self.terminate_threads()
+        event.accept()
+        # TODO: fix this
+        sys.exit(0)
+        QtWidgets.QMainWindow.closeEvent(self, event)
+
+    def terminate_threads(self):
+        for i in range(len(self.threads)):
+            self.workers[i].stop()
 
     def update_curr_gov_combobox(self, text):
         self.curr_gov_combobox.setCurrentText(text)
 
     def update_ram_usage_graph(self, text):
-        pass
-        # self.ram_usage_graph.setText(text[0])
-        # self.ram_usage_graph.setValue(text[1])
+        self.statistics["ram_usage"].append(float(text))
+        if len(self.statistics["ram_usage"]) > 10:
+            self.statistics["ram_usage"].pop(0)
+        self.ram_graph.plot(y=self.statistics["ram_usage"], clear=True)
 
     def update_cpu_info(self, text):
         percent, temp = text.split(";")
-        self.cpu_temp_label.setText(str(temp))
-        # self.cpu_usage_graph.setText(percent)
+        self.statistics["cpu_usage"].append(float(percent))
+        if len(self.statistics["cpu_usage"]) > 10:
+            self.statistics["cpu_usage"].pop(0)
+        self.cpu_temp_label.setText(str(temp) + "°C")
+        self.cpu_graph.plot(y=self.statistics["cpu_usage"], clear=True)
 
     def update_gpu_info(self, text):
         percent = text.split(";")[0]
-        # self.gpu_temp_label.setText(temp)
-        # self.gpu_usage_graph.setText(percent)
+        self.statistics["gpu_usage"].append(float(percent))
+        if len(self.statistics["gpu_usage"]) > 10:
+            self.statistics["gpu_usage"].pop(0)
+        self.gpu_graph.plot(y=self.statistics["gpu_usage"], clear=True)
     
 
 if __name__ == "__main__":
+    # setup logging
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(threadName)s %(message)s', datefmt='%d-%b-%y %H:%M:%S')
     app = QtWidgets.QApplication(sys.argv)
     main_window = QtWidgets.QMainWindow()
     ui = MainWindow(main_window)
-    ui.setupUi(main_window)
     ui.show()
     sys.exit(app.exec())
