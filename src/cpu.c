@@ -126,6 +126,7 @@ static char *get_thermal_drivers_path(const char *vendorID_drivers)
         fclose(read);
     }
 
+    pclose(cmd);
     return NULL;
 
 reg:

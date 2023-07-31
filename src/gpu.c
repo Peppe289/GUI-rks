@@ -82,6 +82,7 @@ static char *get_thermal_drivers_path_gpu(const char *vendorID_drivers_gpu)
         fclose(read);
     }
 
+    pclose(cmd);
     return NULL;
 
 reg:
