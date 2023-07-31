@@ -63,6 +63,7 @@ int clear_ram(void);
 
 /** GPU utils **/
 int get_gpu_usage();
+int get_gpu_thermal();
 /** end GPU utils **/
 
 /** CPU Utils **/
