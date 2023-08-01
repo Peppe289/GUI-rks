@@ -19,7 +19,6 @@ def clear_ram(libRKM: ctypes.CDLL):
     logging.info("RAM was cleared")
 
 def change_governor(data):
-    logging.info("Changing governor to " + data)
     file = open("/sys/devices/system/cpu/cpufreq/policy0/scaling_governor", "w")
     file.write(data)
     file.close()

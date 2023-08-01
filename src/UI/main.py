@@ -86,6 +86,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def change_governor(self):
         if self.curr_gov_combobox.currentText() == self.curr_gov:
             return
+        logging.info(f"Changing governor. New={self.curr_gov_combobox.currentText()}, Old={self.curr_gov}")
         try:
             middleWare.change_governor(self.curr_gov_combobox.currentText())
         except Exception as e:

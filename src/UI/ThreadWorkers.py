@@ -37,8 +37,8 @@ class GetRamUsageWorker(GeneralWorker):
 
     def _run(self):
         while self._isRunning:
-            text = self.get_ram_usage()
             QThread.msleep(1000)
+            text = self.get_ram_usage()
             self.progress.emit(text)
         self.finished.emit()
         self.stop()
@@ -60,8 +60,8 @@ class GetGpuInfoWorker(GeneralWorker):
 
     def _run(self):
         while self._isRunning:
-            text = self.get_gpu_usage()
             QThread.msleep(1000)
+            text = self.get_gpu_usage()
             self.progress.emit(text)
         self.finished.emit()
 
@@ -83,8 +83,8 @@ class GetCpuInfoWorker(GeneralWorker):
 
     def _run(self):
         while self._isRunning:
-            text = self.get_cpu_usage()
             QThread.msleep(1000)
+            text = self.get_cpu_usage()
             self.progress.emit(text)
         self.finished.emit()
 
@@ -103,11 +103,11 @@ class GetCurrentGovWorker(GeneralWorker):
     
     def _run(self):
         while self._isRunning:
+            QThread.msleep(1000)
             try:
                 text = self.get_current_governor()
             except Exception as e:
                 show_popup_error(e)
                 break
-            QThread.msleep(1000)
             self.progress.emit(text)
         self.finished.emit()
