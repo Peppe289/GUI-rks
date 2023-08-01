@@ -1,4 +1,4 @@
-import time, psutil, ctypes, logging
+import psutil, ctypes
 from PyQt6.QtCore import pyqtSignal, QObject, QThread
 from middleWare import show_popup_error
 
@@ -28,15 +28,12 @@ class GetRamUsageWorker(GeneralWorker):
         super().__init__()
         self.libRKM = libRKM
 
-    def get_ram_usage(self):
+    def get_ram_usage(self) -> str:
         memstats = self.libRKM.memory_percentage
         memstats.restype = ctypes.c_float
         percent = memstats()
         text = str(float(f'{percent:.2f}'))
         return text
-
-    def stop(self):
-        self._isRunning = False
 
     def _run(self):
         while self._isRunning:
@@ -54,7 +51,7 @@ class GetGpuInfoWorker(GeneralWorker):
         super().__init__()
         self.libRKM = libRKM
 
-    def get_gpu_usage(self):
+    def get_gpu_usage(self) -> str:
         gpu_percentage = self.libRKM.get_gpu_usage
         gpu_percentage.restype = ctypes.c_int
         gpu_percentage = str(gpu_percentage())
@@ -64,7 +61,7 @@ class GetGpuInfoWorker(GeneralWorker):
     def _run(self):
         while self._isRunning:
             text = self.get_gpu_usage()
-            time.sleep(1)
+            QThread.msleep(1000)
             self.progress.emit(text)
         self.finished.emit()
 
@@ -76,7 +73,7 @@ class GetCpuInfoWorker(GeneralWorker):
         super().__init__()
         self.libRKM = libRKM
 
-    def get_cpu_usage(self):
+    def get_cpu_usage(self) -> str:
         cpu_percentage = str(psutil.cpu_percent(percpu=False))
         cpu_temp = self.libRKM.get_cpu_temp
         cpu_temp.restype = ctypes.c_float
@@ -87,7 +84,7 @@ class GetCpuInfoWorker(GeneralWorker):
     def _run(self):
         while self._isRunning:
             text = self.get_cpu_usage()
-            time.sleep(1)
+            QThread.msleep(1000)
             self.progress.emit(text)
         self.finished.emit()
 
@@ -98,8 +95,9 @@ class GetCurrentGovWorker(GeneralWorker):
     def __init__(self):
         super().__init__()
 
-    def get_current_governor(self):
-        with open("/sys/devices/system/cpu/cpufreq/policy0/scaling_governor") as f:
+    @staticmethod
+    def get_current_governor() -> str:
+        with open("/sys/devices/system/cpu/cpufreq/policy0/scaling_governor", "r") as f:
             text = f.readlines()[0].strip().split(" ")
         return text[0]
     
@@ -107,10 +105,9 @@ class GetCurrentGovWorker(GeneralWorker):
         while self._isRunning:
             try:
                 text = self.get_current_governor()
-            except:
-                show_popup_error()
-                text = ['error']
+            except Exception as e:
+                show_popup_error(e)
                 break
-            time.sleep(1)
-            self.progress.emit(text[0])
+            QThread.msleep(1000)
+            self.progress.emit(text)
         self.finished.emit()

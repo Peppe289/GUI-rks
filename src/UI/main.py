@@ -1,6 +1,6 @@
 import sys, ctypes, logging
 from PyQt6 import QtWidgets
-from PyQt6.QtCore import QThread
+from PyQt6.QtCore import QThread, pyqtSlot
 from MainWindow import Ui_MainWindow
 from ThreadWorkers import GetRamUsageWorker, GetCpuInfoWorker, GetGpuInfoWorker, GetCurrentGovWorker
 import middleWare
@@ -20,10 +20,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         
         # fill governors combobox
         self.curr_gov_combobox.addItems(middleWare.get_governors())
+        # this is used as backup if we can't change the governor
+        # short explanation: if we fail to change governor, the combobox will be updated using the "wrong" value
+        # but the governor will remain the same. We need to keep track of the current governor
+        # and if the change fails, we will just revert the combobox text to the old one
+        self.curr_gov: str = GetCurrentGovWorker.get_current_governor()
+        self.curr_gov_combobox.setCurrentText(self.curr_gov)
 
         # Connect buttons and combobox
-        self.clear_ram_btn.clicked.connect(lambda: middleWare.clear_ram(self.libRKM))
-        self.curr_gov_combobox.currentTextChanged.connect(lambda: middleWare.change_governor(self.curr_gov_combobox.currentText()))
+        self.clear_ram_btn.clicked.connect(lambda: self.clear_ram())
+        self.curr_gov_combobox.currentTextChanged.connect(self.change_governor)
 
         # hide graph x axis
         self.ram_graph.hideAxis("bottom")
@@ -32,7 +38,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.cpu_graph.setLabel('left', 'Usage (%)')
         self.gpu_graph.hideAxis("bottom")
         self.gpu_graph.setLabel('left', 'Usage (%)')
-
+        
         # Connect threads
         self.create_threads()
 
@@ -41,24 +47,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.workers.append(GetRamUsageWorker(self.libRKM))
         self.workers[-1].progress.connect(self.update_ram_usage_graph)
-        self.threads.append(QThread(self))
 
         self.workers.append(GetCpuInfoWorker(self.libRKM))
         self.workers[-1].progress.connect(self.update_cpu_info)
-        self.threads.append(QThread(self))
 
         self.workers.append(GetGpuInfoWorker(self.libRKM))
         self.workers[-1].progress.connect(self.update_gpu_info)
-        self.threads.append(QThread(self))
 
         self.workers.append(GetCurrentGovWorker())
         self.workers[-1].progress.connect(self.update_curr_gov_combobox)
-        self.threads.append(QThread(self))
 
-        for i in range(len(self.threads)):
-            self.workers[i].moveToThread(self.threads[i])
+        for i in range(len(self.workers)):
+            self.threads.append(QThread())
+            self.workers[i].moveToThread(self.threads[-1])
             self.threads[i].started.connect(self.workers[i].start)
-            self.workers[i].finished.connect(self.threads[i].quit)
+            self.workers[i].finished.connect(self.threads[-1].quit)
             if self.threads[i].isRunning():
                 self.workers[i].start()
             else:
@@ -73,7 +76,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if self.threads[i].isRunning():
                 self.workers[i].stop()
             self.threads[i].quit()
-            self.threads[i].wait()
+
+    def clear_ram(self):
+        try:
+            middleWare.clear_ram(self.libRKM)
+        except Exception as e:
+            middleWare.show_popup_error(e)
+
+    def change_governor(self):
+        if self.curr_gov_combobox.currentText() == self.curr_gov:
+            return
+        try:
+            middleWare.change_governor(self.curr_gov_combobox.currentText())
+        except Exception as e:
+            self.curr_gov_combobox.setCurrentText(self.curr_gov)
+            logging.debug("Failed to change governor")
+            middleWare.show_popup_error(e)
+        else:
+            # if we successfully changed the governor, we need to update the string that keeps track of the change
+            self.curr_gov = self.curr_gov_combobox.currentText()
 
     def update_curr_gov_combobox(self, text: str):
         self.curr_gov_combobox.setCurrentText(text)
@@ -104,8 +125,6 @@ if __name__ == "__main__":
     # setup logging
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(threadName)s %(message)s', datefmt='%d-%b-%y %H:%M:%S')
     app = QtWidgets.QApplication(sys.argv)
-    main_window = QtWidgets.QMainWindow()
     ui = MainWindow()
-    ui.setupUi(main_window)
-    main_window.show()
+    ui.show()
     sys.exit(app.exec())
