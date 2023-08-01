@@ -50,11 +50,25 @@
          <widget class="PlotWidget" name="cpu_graph"/>
         </item>
         <item>
-         <widget class="QLabel" name="gpu_label">
-          <property name="text">
-           <string>GPU</string>
-          </property>
-         </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QLabel" name="gpu_label">
+            <property name="text">
+             <string>GPU</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="gpu_temp_label">
+            <property name="text">
+             <string>loading...</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item>
          <widget class="PlotWidget" name="gpu_graph"/>
