@@ -10,13 +10,12 @@ def show_popup_error(e: Exception):
     message_box.exec()
 
 def clear_ram(libRKM: ctypes.CDLL):
-    logging.info("Clearing RAM")
     clear_ram = libRKM.clear_ram
     clear_ram.restype = ctypes.c_int
     result = clear_ram()
     if result != 0:
         raise Exception("generic error")
-    logging.info("RAM was cleared")
+    logging.info("RAM cleared")
 
 def change_governor(data):
     file = open("/sys/devices/system/cpu/cpufreq/policy0/scaling_governor", "w")
