@@ -59,8 +59,7 @@ class GetGpuInfoWorker(GeneralWorker):
         usage = str(gpu_percentage())
         gpu_temp = self.libRKM.get_gpu_thermal
         gpu_temp.restype = ctypes.c_int
-        # temp = str(gpu_temp()) Commented because this function is not working on NVIDIA (my GPU)
-        temp = "0" # TODO: Fix this
+        temp = str(gpu_temp())
         return {
             "usage": usage,
             "temperature": temp,

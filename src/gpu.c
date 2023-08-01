@@ -108,6 +108,9 @@ int get_gpu_thermal()
     /** now is only for amdgpu **/
     path = get_thermal_drivers_path_gpu("amdgpu");
 
+    if (path == NULL)
+        return ret;
+
     path = realloc(path, (strlen(path) +
                           strlen("temp1_input")) *
                              sizeof(char));
@@ -123,11 +126,7 @@ int get_gpu_thermal()
         free(path);
         return ret;
     }
-
-    printf("\n%s\n", path);
-
     fscanf(fp, "%d", &ret);
-    printf("%d", ret);
 
     free(path);
     fclose(fp);
