@@ -31,7 +31,7 @@ static struct meminfo *collect_memory_usage()
     char *ptr;
 
     if (fp == NULL) {
-        fprintf(stderr, "Error to read memory info");
+        print_err("Error to read memory info");
         return NULL;
     }
 

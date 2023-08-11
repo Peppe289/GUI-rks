@@ -65,7 +65,7 @@ DirData collect_dir_info(const char *dir_path)
     directory = opendir(dir_path);
     if (directory == NULL)
     {
-        fprintf(stderr, "Error to open %s", dir_path);
+        print_err("Error to open %s", dir_path);
         return NULL;
     }
 
@@ -116,7 +116,7 @@ char *find_file(char *dir_path, const char *file)
     directory = opendir(dir_path);
     if (directory == NULL)
     {
-        fprintf(stderr, "Error to open %s", dir_path);
+        print_err("Error to open %s", dir_path);
         return NULL;
     }
 

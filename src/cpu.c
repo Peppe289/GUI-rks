@@ -47,7 +47,7 @@ int SingleThreadMaxFreq(int thread)
     /** Error to open file **/
     if (fp == NULL)
     {
-        fprintf(stderr, "Error to open %s", path);
+        print_err("Error to open %s", path);
         return -1;
     }
 
@@ -161,7 +161,7 @@ float get_cpu_temp()
     path = get_thermal_drivers_path(thermalDrivers[index]);
     if (path == NULL)
     {
-        fprintf(stderr, "\nVendorID Unknown");
+        print_err("\nVendorID Unknown");
         goto exit;
     }
 
@@ -205,7 +205,7 @@ Policy get_possible_governor()
 
     if (fp == NULL)
     {
-        fprintf(stderr, "Error to open %s", "policy0");
+        print_err("Error to open %s", "policy0");
         return NULL;
     }
 

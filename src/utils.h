@@ -20,6 +20,21 @@
 #define DT_FILE 8
 #endif
 
+#define print_err(...)                     \
+    do                                     \
+    {                                      \
+        fprintf(stderr, "%s: ", __func__); \
+        fprintf(stderr, __VA_ARGS__);      \
+    } while (0);
+
+#define print_info(...)                    \
+    do                                     \
+    {                                      \
+        fprintf(stdout, "%s: ", __func__); \
+        fprintf(stdout, __VA_ARGS__);      \
+    } while (0);
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
