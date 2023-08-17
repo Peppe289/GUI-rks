@@ -5,7 +5,7 @@
 FLAGS_GCC = -fPIC -Wall -Wextra -O3
 FLAGS_CPP = -fPIC -Wall -Wextra
 
-build: clean-all gpu directory meminfo cpu cpuid link
+build: clean-all gpu directory meminfo cpu fan_service cpuid link
 
 ##
 ## C file
@@ -22,6 +22,9 @@ meminfo:
 
 cpu:
 	gcc cpu.c -c $(FLAGS_GCC)
+
+fan_service:
+	gcc fan_service.c -c $(FLAGS_GCC)
 
 ##
 ## C++ file
