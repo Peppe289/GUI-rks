@@ -13,6 +13,10 @@ int get_gpu_usage()
     int ret = -1;
     FILE *fp;
 
+    /**
+     * The GPUs running in standard systems is only 1.
+     * So use this function which only finds the first reference.
+     */
     path = find_file("/sys/devices/", "gpu_busy_percent");
 
     if (path == NULL)

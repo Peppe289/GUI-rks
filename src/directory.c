@@ -105,6 +105,8 @@ void free_dir_data(DirData data)
 
 /**
  * Recursively searches for a file path to find.
+ * 
+ * This function finds only the first reference.
  */
 char *find_file(char *dir_path, const char *file)
 {
