@@ -29,7 +29,7 @@ static char *get_mobo_module_path(const char *ModuleID)
     while (fscanf(cmd, "%s", path) != EOF)
     {
         lenght = strlen(path);
-        lenght -= strlen("temp1_input");
+        lenght -= strlen("fan1_input");
         path[lenght] = '\0';
         strcat(path, "name");
         read = fopen(path, "r");
@@ -87,6 +87,8 @@ int get_fan_speed()
     path = realloc(path, (strlen(path) +
                           strlen("fan1_input")) *
                              sizeof(char));
+
+    strcat(path, "fan1_input");
 
     fp = fopen(path, "r");
 
