@@ -16,7 +16,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             "gpu_usage": [],
         }
 
-        self.libRKM = ctypes.CDLL('./src/libRKM.so')
+        self.libRKM = ctypes.CDLL('./src/librks.so')
         self.graphs = [self.ram_graph, self.cpu_graph, self.gpu_graph]
         
         # fill governors combobox
